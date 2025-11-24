@@ -1,0 +1,40 @@
+import { API_ENDPOINTS } from "@/constants/endpoints";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import http from "@/framework/utils/http";
+
+export default interface IBotFlowLibraryMutation {
+  flow_id?: any;
+  method: "POST" | "PUT" | "DELETE";
+  payload?: any;
+}
+
+export const botFlowLibraryMutation = (input: IBotFlowLibraryMutation) => {
+  if (input.method == "PUT" || input.method == "DELETE") {
+    const finalUrl =
+      `${API_ENDPOINTS.FLOW}${API_ENDPOINTS.LIBRARY}` + `/${input.flow_id}`;
+    if (input.method == "PUT") {
+      return http.put(finalUrl, input.payload);
+    } else {
+      return http.delete(finalUrl);
+    }
+  } else {
+    const finalUrl = `${API_ENDPOINTS.FLOW}${API_ENDPOINTS.LIBRARY}`;
+    return http.post(finalUrl, input.payload);
+  }
+};
+
+export const useBotFlowLibraryMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: IBotFlowLibraryMutation) =>
+      botFlowLibraryMutation(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [API_ENDPOINTS.FLOW, API_ENDPOINTS.LIBRARY],
+      });
+    },
+    onError: (error) => {
+      console.error("Error product mutation:", error);
+    },
+  });
+};

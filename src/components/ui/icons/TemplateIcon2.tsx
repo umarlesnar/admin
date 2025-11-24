@@ -1,0 +1,59 @@
+export const TemplateIcon2: React.FC<React.SVGAttributes<{}>> = (props) => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <rect
+      x="3.66675"
+      y="3.66666"
+      width="14.6667"
+      height="3.66667"
+      rx="1"
+      stroke="currentColor"
+      strokeOpacity="0.9"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <rect
+      x="3.66675"
+      y="11"
+      width="5.5"
+      height="7.33333"
+      rx="1"
+      stroke="currentColor"
+      strokeOpacity="0.9"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12.8333 11H18.3333"
+      stroke="currentColor"
+      strokeOpacity="0.9"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12.8333 14.6667H18.3333"
+      stroke="currentColor"
+      strokeOpacity="0.9"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12.8333 18.3333H18.3333"
+      stroke="currentColor"
+      strokeOpacity="0.9"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);

@@ -1,0 +1,26 @@
+name: kwic Dev Dashboard UI
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'ka*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: grant permissions to shell script
+        run: chmod +x ./.github/workflows/config/prod/deploy.sh
+      - name: Run multi repo cloning script
+        env:
+          PA_TOKEN: ${{ secrets.PAT_SECRET }} # `PAT_SECRET` is a secret that contains your PAT (Personal access token)
+          CR_PAT: ${{ secrets.CR_PAT }}
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+        run: "./.github/workflows/config/prod/deploy.sh"
+        shell: bash

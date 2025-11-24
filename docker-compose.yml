@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: admin-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXTAUTH_URL=http://nextjs:3000/
+      - NEXTAUTH_SECRET=asd
+      - HOSTNAME=nextjs

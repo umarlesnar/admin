@@ -1,0 +1,25 @@
+export const DeleteIcon: React.FC<React.SVGAttributes<{}>> = (props) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg
+   "
+    {...props}
+  >
+    <g clipPath="url(#clip0_3455_63581)">
+      <path
+        d="M22 4H17V2C17 1.46957 16.7893 0.960859 16.4142 0.585786C16.0391 0.210714 15.5304 0 15 0L9 0C8.46957 0 7.96086 0.210714 7.58579 0.585786C7.21071 0.960859 7 1.46957 7 2V4H2V6H4V21C4 21.7956 4.31607 22.5587 4.87868 23.1213C5.44129 23.6839 6.20435 24 7 24H17C17.7956 24 18.5587 23.6839 19.1213 23.1213C19.6839 22.5587 20 21.7956 20 21V6H22V4ZM9 2H15V4H9V2ZM18 21C18 21.2652 17.8946 21.5196 17.7071 21.7071C17.5196 21.8946 17.2652 22 17 22H7C6.73478 22 6.48043 21.8946 6.29289 21.7071C6.10536 21.5196 6 21.2652 6 21V6H18V21Z"
+        fill="currentColor"
+      />
+      <path d="M11 10H9V18H11V10Z" fill="currentColor" />
+      <path d="M15 10H13V18H15V10Z" fill="currentColor" />
+    </g>
+    <defs>
+      <clipPath id="clip0_2181_2509">
+        <rect width="24" height="24" fill="currentColor" />
+      </clipPath>
+    </defs>
+  </svg>
+);
