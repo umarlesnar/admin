@@ -1,6 +1,7 @@
 import { type NextRequest } from "next/server";
 import { RequestContext } from "next/dist/server/base-server";
 import nc from "./handler";
+import ncPost from "./post-handler";
 export const dynamic = "force-dynamic";
 
 export async function GET(
@@ -8,4 +9,11 @@ export async function GET(
   ctx: RequestContext
 ): Promise<void | Response> {
   return (await nc.run(request, ctx)) as Promise<void | Response>;
+}
+
+export async function POST(
+  request: NextRequest,
+  ctx: RequestContext
+): Promise<void | Response> {
+  return (await ncPost.run(request, ctx)) as Promise<void | Response>;
 }
