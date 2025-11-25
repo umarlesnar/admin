@@ -22,7 +22,9 @@ interface IPaymentInvoice extends Document {
   discount: number;
   base_price: number;
   invoice_number: string;
+  invoice_id: string; // NEW: Added to interface
 }
+
 type PaymentInvoiceModel = Model<IPaymentInvoice>;
 const PaymentInvoiceModelSchema = new Schema<
   IPaymentInvoice,
@@ -50,9 +52,10 @@ const PaymentInvoiceModelSchema = new Schema<
     discount: { type: Schema.Types.Number, default: 0 },
     base_price: { type: Schema.Types.Number },
     invoice_number: { type: String, sparse: true },
+    invoice_id: { type: String, sparse: true }, // NEW: Added to schema
   },
   { strict: false }
 );
-//ProductItemModelSchema.index({ expired_at: 1 }, { expireAfterSeconds: 0 });
+
 export default models.payment_invoice ||
   model<IPaymentInvoice>("payment_invoice", PaymentInvoiceModelSchema);

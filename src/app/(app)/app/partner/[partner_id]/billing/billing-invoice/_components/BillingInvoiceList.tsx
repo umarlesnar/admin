@@ -25,7 +25,7 @@ import AddInvoiceSheet from "./AddInvoiceSheet";
 const STATUS = [
   { value: "", name: "All" },
   { value: "paid", name: "Paid" },
-  { value: "not paid", name: "Not Paid" },
+  { value: "pending", name: "Pending" },
 ];
 
 const PAYMENT_METHOD = [
@@ -250,7 +250,7 @@ export const BillingInvoiceList = (props: Props) => {
                 : "text-[#898a93]"
             } font-medium`}
           >
-            {row.getValue("status") === "paid" ? "Paid" : "Not Paid"}
+            {row.getValue("status") === "paid" ? "Paid" : "Pending"}
           </p>
         </div>
       ),

@@ -57,7 +57,8 @@ router
         quantity = 1,
         base_price,
         discount = 0,
-        invoice_number,
+        invoice_number, 
+        invoice_id,     
         paid_at,
       } = body;
 
@@ -84,7 +85,6 @@ router
         );
       }
 
-      // Create new invoice
       const invoiceData: any = {
         workspace_id: new Types.ObjectId(workspace_id),
         plan,
@@ -98,12 +98,9 @@ router
         base_price: Number(base_price),
         discount: Number(discount),
         created_at: new Date(),
-        invoice_number
+        invoice_number, 
+        invoice_id, 
       };
-
-      if (invoice_number) {
-        invoiceData.invoice_number = invoice_number;
-      }
 
       if (status === "paid" && paid_at) {
         invoiceData.paid_at = Math.floor(Number(paid_at) / 1000);

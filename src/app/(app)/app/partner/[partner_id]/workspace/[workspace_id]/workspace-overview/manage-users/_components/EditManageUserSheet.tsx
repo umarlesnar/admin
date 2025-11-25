@@ -34,7 +34,7 @@ const roles = [
 ];
 
 const PERMISSION_TEMPLATE: any = {
-  OWNER:{
+  OWNER: {
     whatsapp_chat: true,
     manage_advance_wb_chat: false,
     whatsapp_operator_inbox: false,
@@ -49,6 +49,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: true,
     integration: true,
     analytics: true,
+    payments: true,
     channel_whatsapp_profile: true,
     channel_live_chat_profile: true,
     channel_instagram_profile: true,
@@ -78,6 +79,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: true,
     integration: true,
     analytics: true,
+    payments: true,
     channel_whatsapp_profile: true,
     channel_live_chat_profile: true,
     channel_instagram_profile: true,
@@ -107,6 +109,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: true,
     integration: false,
     analytics: false,
+    payments: true,
     channel_whatsapp_profile: false,
     channel_live_chat_profile: false,
     channel_instagram_profile: false,
@@ -136,6 +139,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: true,
     integration: false,
     analytics: false,
+    payments: true,
     channel_whatsapp_profile: false,
     channel_live_chat_profile: false,
     channel_instagram_profile: false,
@@ -165,6 +169,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: false,
     integration: false,
     analytics: false,
+    payments: true,
     channel_whatsapp_profile: false,
     channel_live_chat_profile: false,
     channel_instagram_profile: false,
@@ -194,6 +199,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: false,
     integration: false,
     analytics: false,
+    payments: true,
     channel_whatsapp_profile: false,
     channel_live_chat_profile: false,
     channel_instagram_profile: false,
@@ -223,6 +229,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: false,
     integration: false,
     analytics: false,
+    payments: true,
     channel_whatsapp_profile: false,
     channel_live_chat_profile: false,
     channel_instagram_profile: false,
@@ -252,6 +259,7 @@ const PERMISSION_TEMPLATE: any = {
     whatsapp_flow: true,
     integration: true,
     analytics: false,
+    payments: true,
     channel_whatsapp_profile: false,
     channel_live_chat_profile: false,
     channel_instagram_profile: false,
@@ -283,6 +291,7 @@ const permissionsKeys = [
   "whatsapp_flow",
   "integration",
   "analytics",
+  "payments",
   "channel_whatsapp_profile",
   "channel_live_chat_profile",
   "channel_instagram_profile",
@@ -346,6 +355,7 @@ const EditManageUserSheet = ({ children, data }: Props) => {
                 whatsapp_flow: true,
                 integration: true,
                 analytics: true,
+                payments: true,
                 channel_whatsapp_profile: true,
                 channel_live_chat_profile: true,
                 channel_instagram_profile: true,
@@ -370,10 +380,10 @@ const EditManageUserSheet = ({ children, data }: Props) => {
                 await mutateAsync({
                   manage_user_id: data?._id,
                   method: "PUT",
-                  payload:  {
+                  payload: {
                     ...values,
-                    permission_template: values.role, 
-                  }
+                    permission_template: values.role,
+                  },
                 });
                 toast.success(`Permission Update Successfully`, {
                   id: loadingToast,

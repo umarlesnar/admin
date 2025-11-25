@@ -12,8 +12,8 @@ import Text from "@/components/ui/text";
 import { useAddInvoiceMutation } from "@/framework/partner/billing-invoice/add-invoice-mutation";
 import { usePartnerWorkspace } from "@/framework/partner/workspace/get-partner-workspace";
 import { usePartnerProductQuery } from "@/framework/partner/get-partner-product";
-import { ErrorMessage, Form, Formik } from "formik";
-import React, { useState } from "react";
+import { ErrorMessage, Form, Formik, useFormikContext } from "formik";
+import React from "react";
 import { toast } from "sonner";
 import * as Yup from "yup";
 import { Combobox } from "@/components/ui/combobox";
@@ -31,12 +31,32 @@ const validationSchema = Yup.object().shape({
   plan: Yup.string().required("Plan is required"),
   base_price: Yup.number().required("Base price is required"),
   invoice_number: Yup.string().optional(),
+  invoice_id: Yup.string().optional(),
   paid_at: Yup.number().when("status", {
     is: "paid",
     then: (schema) => schema.required("Paid date is required when status is paid"),
     otherwise: (schema) => schema.optional(),
   }),
 });
+
+// 2. Define a helper component to handle the side effect
+const PriceCalculator = () => {
+  const { values, setFieldValue } = useFormikContext<any>();
+
+  React.useEffect(() => {
+    const base = parseFloat(values.base_price) || 0;
+    const tax = parseFloat(values.total_tax) || 0;
+    const discount = parseFloat(values.discount) || 0;
+    const total = Math.max(0, base + tax - discount);
+    
+    // Only update if the value has actually changed to avoid infinite loops
+    if (values.total_price !== total) {
+      setFieldValue("total_price", total);
+    }
+  }, [values.base_price, values.total_tax, values.discount, values.total_price, setFieldValue]);
+
+  return null;
+};
 
 const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
   const { mutate: addInvoice, isPending } = useAddInvoiceMutation();
@@ -62,6 +82,8 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
   const planOptions = (productData?.items || []).map((plan: any) => ({
     value: plan.name,
     name: plan.name,
+    price: plan.price || 0,
+    tax: plan.tax || 0, 
   }));
 
   const typeOptions = [
@@ -81,7 +103,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
 
   const statusOptions = [
     { value: "paid", name: "Paid" },
-    { value: "not paid", name: "Not Paid" },
+    { value: "pending", name: "Pending" },
   ];
 
   const handleSubmit = (values: any, { resetForm }: any) => {
@@ -119,33 +141,27 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
               plan: "",
               type: "subscription",
               payment_method: "online",
-              currency: "USD",
+              currency: "INR",
               total_price: "",
               total_tax: "",
-              status: "not paid",
+              status: "pending",
               quantity: "1",
               base_price: "",
               discount: "",
               invoice_number: "",
+              invoice_id: "",
               paid_at: "",
             }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
             {({ values, errors, handleChange, isSubmitting, resetForm, setFieldValue }) => {
-              const calculateTotalPrice = () => {
-                const base = parseFloat(values.base_price) || 0;
-                const tax = parseFloat(values.total_tax) || 0;
-                const discount = parseFloat(values.discount) || 0;
-                return Math.max(0, base + tax - discount);
-              };
-
-              React.useEffect(() => {
-                setFieldValue("total_price", calculateTotalPrice());
-              }, [values.base_price, values.total_tax, values.discount, setFieldValue]);
-
+              
               return (
                 <Form className="w-full h-full flex flex-col px-1 space-y-4 mt-4">
+                  
+                  <PriceCalculator />
+
                   <div className="flex-1 space-y-4">
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
@@ -157,7 +173,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                         dropdownClassname="p-2"
                         placeholder="Select Workspace"
                         selectedOption={workspaceOptions.find(
-                          (o) => o.value === values.workspace_id
+                          (o:any) => o.value === values.workspace_id
                         )}
                         onSelectData={(option: any) => {
                           setFieldValue("workspace_id", option.value);
@@ -170,6 +186,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
+                    {/* Plan Selection */}
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Plan *
@@ -180,10 +197,18 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                         dropdownClassname="p-2"
                         placeholder="Select Plan"
                         selectedOption={planOptions.find(
-                          (o) => o.value === values.plan
+                          (o:any) => o.value === values.plan
                         )}
                         onSelectData={(option: any) => {
                           setFieldValue("plan", option.value);
+                          
+                          if (option.price !== undefined) {
+                            setFieldValue("base_price", option.price);
+                          }
+                          if (option.tax !== undefined) {
+                             setFieldValue("total_tax", option.tax);
+                          }
+                          setFieldValue("discount", "");
                         }}
                       />
                       <ErrorMessage
@@ -193,20 +218,37 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
-                    <div className="space-y-1">
-                      <Text size="sm" tag="label" weight="medium">
-                        Invoice Number
-                      </Text>
-                      <input
-                        type="text"
-                        name="invoice_number"
-                        placeholder="Optional"
-                        value={values.invoice_number}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      />
+                    {/* Invoice Number & ID */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Text size="sm" tag="label" weight="medium">
+                          Invoice Number
+                        </Text>
+                        <input
+                          type="text"
+                          name="invoice_number"
+                          placeholder="Optional"
+                          value={values.invoice_number}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Text size="sm" tag="label" weight="medium">
+                          RazorPay ID
+                        </Text>
+                        <input
+                          type="text"
+                          name="invoice_id"
+                          placeholder="Optional"
+                          value={values.invoice_id}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
                     </div>
 
+                    {/* Type Selection */}
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Type
@@ -225,6 +267,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
+                    {/* Payment Method */}
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Payment Method
@@ -243,6 +286,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
+                    {/* Currency */}
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Currency
@@ -257,6 +301,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
+                    {/* Base Price and Discount */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Text size="sm" tag="label" weight="medium">
@@ -294,6 +339,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       </div>
                     </div>
 
+                    {/* Tax and Total Price */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Text size="sm" tag="label" weight="medium">
@@ -325,6 +371,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       </div>
                     </div>
 
+                    {/* Quantity */}
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Quantity
@@ -339,6 +386,7 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
+                    {/* Status */}
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Status
@@ -357,43 +405,76 @@ const AddInvoiceSheet = ({ isOpen, onClose }: Props) => {
                       />
                     </div>
 
+                    {/* Paid Date & Time - Only visible if status is 'paid' */}
                     {values.status === "paid" && (
-                      <div className="space-y-2">
-                        <div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
                           <DatePicker
                             label="Paid Date"
                             isRequired
-                            selected={values.paid_at ? Math.floor(Number(values.paid_at) / 1000) : undefined}
+                            selected={
+                              values.paid_at
+                                ? Math.floor(Number(values.paid_at) / 1000) 
+                                : undefined
+                            }
                             onSelected={(date: Date) => {
-                              const timestamp = Math.floor(date.getTime() / 1000);
-                              setFieldValue("paid_at", timestamp * 1000);
+                              if (!date) {
+                                setFieldValue("paid_at", "");
+                                return;
+                              }
+                              const existingPaidAt = Number(values.paid_at);
+                              let newDateMoment = moment(date);
+
+                              if (existingPaidAt) {
+                                const existingMoment = moment(existingPaidAt);
+                                newDateMoment = newDateMoment.set({
+                                  hour: existingMoment.hour(),
+                                  minute: existingMoment.minute(),
+                                  second: existingMoment.second(),
+                                });
+                              }
+                              setFieldValue("paid_at", newDateMoment.valueOf());
                             }}
                             placeholder="Select date"
                           />
                         </div>
-                        <div>
+                        <div className="space-y-1">
                           <Text size="sm" tag="label" weight="medium">
                             Paid Time
                           </Text>
                           <TimePicker
-                            value={values.paid_at ? moment.unix(Math.floor(Number(values.paid_at) / 1000)).format("HH:mm") : ""}
+                            value={
+                              values.paid_at
+                                ? moment(Number(values.paid_at)).format("HH:mm") 
+                                : ""
+                            }
                             onChange={(date: any) => {
-                              if (date && date[0]) {
-                                const time = moment(date[0]).format("HH:mm");
-                                const existingDate = values.paid_at ? moment.unix(Math.floor(Number(values.paid_at) / 1000)) : moment();
-                                const newDateTime = existingDate.format("YYYY-MM-DD") + " " + time;
-                                const timestamp = Math.floor(moment(newDateTime, "YYYY-MM-DD HH:mm").toDate().getTime() / 1000);
-                                setFieldValue("paid_at", timestamp * 1000);
+                              if (date && date[0] && values.paid_at) {
+                                const timeMoment = moment(date[0]);
+                                const existingMoment = moment(Number(values.paid_at));
+
+                                const newDateTimeMoment = existingMoment.set({
+                                  hour: timeMoment.hour(),
+                                  minute: timeMoment.minute(),
+                                  second: timeMoment.second(),
+                                });
+
+                                setFieldValue(
+                                  "paid_at",
+                                  newDateTimeMoment.valueOf()
+                                );
                               }
                             }}
                             disabled={!values.paid_at}
                           />
                         </div>
-                        <ErrorMessage
-                          name="paid_at"
-                          component="p"
-                          className="text-xs text-red-500"
-                        />
+                        <div className="col-span-2">
+                          <ErrorMessage
+                            name="paid_at"
+                            component="p"
+                            className="text-xs text-red-500"
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
