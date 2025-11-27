@@ -12,11 +12,20 @@ import { ProductIcon } from "@/components/ui/icons/ProductIcon";
 import { usePartnerBillingInvoiceQuery } from "@/framework/partner/billing-invoice/get-billing-invoice";
 import { NotesIcon } from "@/components/ui/icons/NotesIcon";
 import { BillingInvoiceIcon } from "@/components/ui/icons/BillingInvoice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { EllipsisVerticalIcon } from "@/components/ui/icons/EllipsisVerticalIcon";
+import AddInvoiceSheet from "./AddInvoiceSheet";
 
 const STATUS = [
   { value: "", name: "All" },
   { value: "paid", name: "Paid" },
-  { value: "not paid", name: "Not Paid" },
+  { value: "pending", name: "Pending" },
 ];
 
 const PAYMENT_METHOD = [
@@ -64,7 +73,7 @@ export const BillingInvoiceList = (props: Props) => {
       filter: safeJSONParse(searchParams.get("filter"), {
         status: "",
         type: "",
-        payment_method:"",
+        payment_method: "",
       }),
       sort: safeJSONParse(searchParams.get("sort"), { created_at: "-1" }),
     };
@@ -79,6 +88,8 @@ export const BillingInvoiceList = (props: Props) => {
 
   const [items, setItems] = useState([]);
   const [selectedRow, setSelectedRow] = useState([]);
+
+  const [isAddInvoiceOpen, setIsAddInvoiceOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -239,7 +250,7 @@ export const BillingInvoiceList = (props: Props) => {
                 : "text-[#898a93]"
             } font-medium`}
           >
-            {row.getValue("status") === "paid" ? "Paid" : "Not Paid"}
+            {row.getValue("status") === "paid" ? "Paid" : "Pending"}
           </p>
         </div>
       ),
@@ -257,6 +268,23 @@ export const BillingInvoiceList = (props: Props) => {
           </div>
         );
       },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      size: 50,
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" />
+
+        </DropdownMenu>
+      ),
     },
   ];
 
@@ -371,12 +399,15 @@ export const BillingInvoiceList = (props: Props) => {
               buttonClassname="w-32"
             />
           </div>
-          <div className="mt-6">
+          <div className="mt-6 flex items-center gap-2">
             <RefreshButton
               onClick={() => {
                 refetch();
               }}
             />
+            <Button onClick={() => setIsAddInvoiceOpen(true)}>
+              Add Invoice
+            </Button>
           </div>
         </div>
       </div>
@@ -423,6 +454,10 @@ export const BillingInvoiceList = (props: Props) => {
           />
         )}
       </div>
+      <AddInvoiceSheet
+        isOpen={isAddInvoiceOpen}
+        onClose={() => setIsAddInvoiceOpen(false)}
+      />
     </div>
   );
 };

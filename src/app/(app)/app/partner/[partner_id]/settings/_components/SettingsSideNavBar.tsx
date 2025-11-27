@@ -19,6 +19,7 @@ import { PolicyIcon } from "@/components/ui/icons/PolicyIcon";
 import { WhatsappIcon } from "@/components/ui/icons/WhatsappIcon";
 import { Instagram1Icon } from "@/components/ui/icons/Instagram1Icon";
 import { UserIcon } from "@/components/ui/icons/userIcon";
+import { AccessIcon } from "@/components/ui/icons/AccessIcon";
 
 type Props = {};
 
@@ -51,6 +52,11 @@ const SettingsSideNavBar = (props: Props) => {
       name: "Policies",
       href: `/app/partner/${params.partner_id}/policies`,
       icon: PolicyIcon,
+    },
+    {
+      name: "Node Access",
+      href: `/app/partner/${params.partner_id}/node-access`,
+      icon: AccessIcon, 
     },
   ];
   const whatsappNavigation = [

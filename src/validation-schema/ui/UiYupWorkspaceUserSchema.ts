@@ -16,6 +16,7 @@ export const UiyupStaffSchema = Yup.object().shape({
         "whatsapp_flow",
         "integration",
         "analytics",
+        "payments",
         "channel_whatsapp_profile",
         "channel_live_chat_profile",
         "channel_instagram_profile",

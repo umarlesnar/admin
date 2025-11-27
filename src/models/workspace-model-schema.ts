@@ -20,6 +20,13 @@ export interface WorkspaceBillingInfo {
   zip_code: string;
 }
 
+// Updated interface for Node Permissions with array hint
+interface INodePermission {
+  name: string;
+  id: string;
+  hint?: string[]; // Changed to array of strings
+}
+
 interface IWorkspaceAccount extends Document {
   domain: string;
   name: string;
@@ -44,7 +51,7 @@ interface IWorkspaceAccount extends Document {
   status_changed_at?: Date;
   status_changed_by?: ObjectId | string;
   status_change_reason?: string;
-  status_changed_ip?: string; // Add this
+  status_changed_ip?: string;
   industry?: string;
   phone_code?: string;
   currency?: string;
@@ -65,11 +72,23 @@ interface IWorkspaceAccount extends Document {
   priority_level?: string;
   created_at: Date;
   updated_at: Date;
+  // Field for node permissions
+  nodes_available?: {
+    bot_flow: INodePermission[];
+    work_flow: INodePermission[];
+  };
 }
 
 interface IWorkspaceMethods {}
 
 type WorkspaceModel = Model<IWorkspaceAccount, {}, IWorkspaceMethods>;
+
+// Updated Schema for Node Permission
+const NodePermissionSchema = new Schema({
+  name: { type: String, required: true },
+  id: { type: String, required: true },
+  hint: { type: [String], default: [] }, // Changed type to array of Strings
+});
 
 const WorkspaceModelSchema = new Schema<
   IWorkspaceAccount,
@@ -107,9 +126,9 @@ const WorkspaceModelSchema = new Schema<
     phone_number: { type: String },
   },
   status_changed_at: { type: Schema.Types.Date },
-  status_changed_by: { type: Schema.Types.Mixed }, // Can be ObjectId or string
+  status_changed_by: { type: Schema.Types.Mixed },
   status_change_reason: { type: String },
-  status_changed_ip: { type: String }, // Add this
+  status_changed_ip: { type: String },
   industry: { type: String },
   phone_code: { type: String },
   currency: { type: String },
@@ -128,6 +147,13 @@ const WorkspaceModelSchema = new Schema<
   },
   response_sla_hours: { type: Number, default: 24 },
   priority_level: { type: String, default: "NORMAL" },
+  
+  // New Schema Structure
+  nodes_available: {
+    bot_flow: { type: [NodePermissionSchema], default: [] },
+    work_flow: { type: [NodePermissionSchema], default: [] },
+  },
+  
   created_at: { type: Schema.Types.Date, default: new Date() },
   updated_at: { type: Schema.Types.Date, default: new Date() },
 });
