@@ -20,15 +20,10 @@ import { Combobox } from "@/components/ui/combobox";
 import PlanFormLists from "./PlanFormPage";
 import { usePartnerProductMutation } from "@/framework/partner/partner-product-mutation";
 import { usePartnerProductPolicyQuery } from "@/framework/partner/get-partner-product-policy";
-import { useModulesQuery } from "@/framework/modules/get-modules";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { ModulesIcon } from "@/components/ui/icons/ModulesIcon";
+import PlanIncludedModulesSheet from "./PlanIncludedModulesSheet";
+import { ModuleConfig } from "./PlanModuleConfigSheet";
 
 type Props = {
   children: ReactElement;
@@ -55,26 +50,17 @@ const DISCOUNT_TYPE = [
 
 const EditPlanSheet = ({ children, data }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [manageModulesOpen, setManageModulesOpen] = useState(false);
+
   const { mutateAsync } = usePartnerProductMutation();
   const { data: policies, isLoading } = usePartnerProductPolicyQuery();
-  const Modules = useModulesQuery({
-    per_page: 1000,
-    page: 1,
-    sort: {},
-    filter: {},
-  });
+
   const preventFocus = (event: Event) => {
     event.preventDefault();
   };
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={(value) => {
-        setOpen(value);
-      }}
-    >
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent
         className="w-[400px] sm:w-[500px] h-screen flex flex-col p-5"
@@ -99,16 +85,30 @@ const EditPlanSheet = ({ children, data }: Props) => {
               r_plan_id: "",
               discount_type: "",
               discount_value: "",
-              included_modules: [] as string[],
               tax_percentage: "",
               is_recommeded: false,
-              feature: data?.feature || [],
+              feature: [],
               currency_code: "",
               status: "ENABLE",
               trial_duration: "",
               visibility: false,
               module_id: "",
               ...data,
+              // Normalize included_modules: ensure they are objects (handle backward compatibility for string arrays)
+              included_modules: (data?.included_modules || []).map((m: any) => {
+                if (typeof m === "string") {
+                  return {
+                    module_id: m,
+                    enabled: true,
+                    is_visibility: true,
+                    config: {},
+                  };
+                }
+                return {
+                  ...m,
+                  config: m.config || {}, // Default to empty object if missing
+                };
+              }) as ModuleConfig[],
             }}
             validationSchema={UiYupProductSchema}
             onSubmit={async (values, { setErrors, resetForm }) => {
@@ -131,15 +131,11 @@ const EditPlanSheet = ({ children, data }: Props) => {
                   id: loadingToast,
                 });
 
-                if (error.response) {
-                  if (
-                    error.response.status ===
-                    SERVER_STATUS_CODE.VALIDATION_ERROR_CODE
-                  ) {
-                    setErrors(error.response.data.data);
-                  } else {
-                  }
-                } else {
+                if (
+                  error.response?.status ===
+                  SERVER_STATUS_CODE.VALIDATION_ERROR_CODE
+                ) {
+                  setErrors(error.response.data.data);
                 }
               }
             }}
@@ -156,7 +152,7 @@ const EditPlanSheet = ({ children, data }: Props) => {
               isValid,
             }) => {
               return (
-                <Form className="w-full h-full  flex flex-col px-1">
+                <Form className="w-full h-full flex flex-col px-1">
                   <div className="flex-1 gap-4 space-y-5 pb-8">
                     <div className="w-full space-y-1">
                       <Input
@@ -195,7 +191,7 @@ const EditPlanSheet = ({ children, data }: Props) => {
                         buttonClassname="w-full"
                         dropdownClassname={`p-2`}
                         placeholder={"Select Policy"}
-                        selectedOption={policies.find((o: any) => {
+                        selectedOption={policies?.find((o: any) => {
                           return o.value === values.policy_id;
                         })}
                         onSelectData={(name: any) => {
@@ -227,6 +223,44 @@ const EditPlanSheet = ({ children, data }: Props) => {
                         }}
                       />
                     </div>
+
+                    {/* MODULES SECTION */}
+                    <div className="w-full space-y-2 border rounded-md p-4 bg-gray-50/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="p-2 bg-primary-50 rounded-md">
+                            <ModulesIcon className="w-4 h-4 text-primary-600" />
+                          </div>
+                          <div className="flex flex-col">
+                            <Text size="sm" weight="semibold">
+                              Included Modules
+                            </Text>
+                            <Text size="xs" className="text-gray-500">
+                              {values.included_modules.length} modules
+                              configured
+                            </Text>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setManageModulesOpen(true)}
+                        >
+                          Manage
+                        </Button>
+                      </div>
+                    </div>
+
+                    <PlanIncludedModulesSheet
+                      open={manageModulesOpen}
+                      onClose={() => setManageModulesOpen(false)}
+                      modules={values.included_modules}
+                      onChange={(modules) =>
+                        setFieldValue("included_modules", modules)
+                      }
+                    />
+
                     <div className="w-full space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Discount
@@ -317,162 +351,29 @@ const EditPlanSheet = ({ children, data }: Props) => {
                         errorKey={errors?.r_plan_id}
                       />
                     </div>
-                    <div className="w-full space-y-1">
-                      <Text size="sm" tag="label" weight="medium">
-                        Module
-                      </Text>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
-                          >
-                            {values.included_modules?.length > 0
-                              ? `${values.included_modules.length} modules selected`
-                              : "Select Modules"}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="w-auto min-w-[400px] max-w-[600px]">
-                          <DialogHeader className="flex flex-row items-center justify-between">
-                            <DialogTitle>Select Modules</DialogTitle>
-                            <DialogClose asChild>
-                              <Button variant="ghost" size="sm">
-                                <CloseIcon className="w-4 h-4" />
-                              </Button>
-                            </DialogClose>
-                          </DialogHeader>
-                          <Input
-                            placeholder="Search modules..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="mb-4"
-                          />
-                          <div className="grid grid-cols-2 gap-5 max-h-80 overflow-y-auto p-2">
-                            {(Modules?.data?.items || [])
-                               .filter((item: any) => 
-                                item.is_active === true && 
-                                item.module_id.toLowerCase().includes(searchTerm.toLowerCase())
-                              )
-                              .map((module: any) => (
-                                <div
-                                  key={module.module_id}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    id={module.module_id}
-                                    checked={
-                                      values.included_modules?.includes(
-                                        module.module_id
-                                      ) || false
-                                    }
-                                    onChange={(e) => {
-                                      const currentModules = Array.isArray(
-                                        values.included_modules
-                                      )
-                                        ? values.included_modules
-                                        : [];
-                                      const newModules = e.target.checked
-                                        ? [...currentModules, module.module_id]
-                                        : currentModules.filter(
-                                            (id: string) =>
-                                              id !== module.module_id
-                                          );
-                                      setFieldValue(
-                                        "included_modules",
-                                        newModules
-                                      );
-                                    }}
-                                    className="w-4 h-4 cursor-pointer"
-                                  />
-                                  <label
-                                    htmlFor={module.module_id}
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    {module.module_id}
-                                  </label>
-                                </div>
-                              ))}
-                          </div>
-                          <div className="flex justify-end pt-4">
-                            <DialogClose asChild>
-                              <Button>Save</Button>
-                            </DialogClose>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                    {/* <div className="w-full space-y-1">
-                      <Text size="sm" tag="label" weight="medium">
-                        Module
-                      </Text>
-                      <div className="border border-input rounded-md p-3 min-h-[40px]">
-                        {values.included_modules?.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
-                            {values.included_modules.map((moduleId: string) => (
-                              <div
-                                key={moduleId}
-                                className="bg-muted px-2 py-1 rounded text-sm"
-                              >
-                                {moduleId}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">
-                            No modules selected
-                          </span>
-                        )}
-                      </div>
-                    </div> */}
                     <PlanFormLists />
                     <div className="flex items-center gap-5">
                       <div className="flex items-center space-x-2">
                         <Text size="sm" weight="semibold" color="primary">
                           Recommended
                         </Text>
-                        <button
-                          type="button"
-                          className={`w-12 h-6 rounded-full flex items-center transition duration-300 ease-in-out ${
-                            values.is_recommeded ? "bg-primary" : "bg-gray-300"
-                          }`}
-                          onClick={() =>
-                            setFieldValue(
-                              "is_recommeded",
-                              !values.is_recommeded
-                            )
+                        <Switch
+                          checked={values.is_recommeded}
+                          onCheckedChange={(checked) =>
+                            setFieldValue("is_recommeded", checked)
                           }
-                        >
-                          <div
-                            className={`w-4 h-4 bg-white rounded-full shadow-md transform ${
-                              values.is_recommeded
-                                ? "translate-x-6"
-                                : "translate-x-1"
-                            } transition duration-300 ease-in-out`}
-                          />
-                        </button>
+                        />
                       </div>
                       <div className="flex items-center space-x-2">
                         <Text size="sm" weight="semibold" color="primary">
                           Visibility
                         </Text>
-                        <button
-                          type="button"
-                          className={`w-12 h-6 rounded-full flex items-center transition duration-300 ease-in-out ${
-                            values.visibility ? "bg-primary" : "bg-gray-300"
-                          }`}
-                          onClick={() =>
-                            setFieldValue("visibility", !values.visibility)
+                        <Switch
+                          checked={values.visibility}
+                          onCheckedChange={(checked) =>
+                            setFieldValue("visibility", checked)
                           }
-                        >
-                          <div
-                            className={`w-4 h-4 bg-white rounded-full shadow-md transform ${
-                              values.visibility
-                                ? "translate-x-6"
-                                : "translate-x-1"
-                            } transition duration-300 ease-in-out`}
-                          />
-                        </button>
+                        />
                       </div>
                     </div>
 

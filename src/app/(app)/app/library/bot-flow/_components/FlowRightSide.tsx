@@ -34,6 +34,7 @@ import TransformType from "./types/TransformType";
 import NoteType from "./types/NoteType";
 import AskMediaType from "./types/AskMediaType";
 import SequenceType from "./types/SequenceType";
+import WebViewType from "./types/WebViewType";
 
 type Props = {};
 
@@ -99,6 +100,8 @@ const nodeColor = (node: any) => {
       return "orange";
     case "whatsapp_order_status":
       return "green";
+    case "webview":
+      return "orange";
     default:
       return "#eee";
   }
@@ -140,6 +143,7 @@ const FlowRightSide = (props: Props) => {
       whatsapp_order_status: SendOrderStatusType,
       askAddress: AskAddressType,
       askMedia: AskMediaType,
+      webview: WebViewType,
     }),
     []
   );

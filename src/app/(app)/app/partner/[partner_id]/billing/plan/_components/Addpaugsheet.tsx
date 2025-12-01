@@ -9,8 +9,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Text from "@/components/ui/text";
-import { ErrorMessage, Form, Formik } from "formik";
-import React, { ReactElement, useRef, useState } from "react";
+import { Form, Formik } from "formik";
+import React, { ReactElement, useState } from "react";
 import { SERVER_STATUS_CODE } from "@/lib/utils/common";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -19,16 +19,9 @@ import { UiYupPaugSchema } from "@/validation-schema/ui/UiYupPoductSchema";
 import { Combobox } from "@/components/ui/combobox";
 import PlanFormLists from "./PlanFormPage";
 import { usePartnerProductMutation } from "@/framework/partner/partner-product-mutation";
-import { usePartnerProductPolicyQuery } from "@/framework/partner/get-partner-product-policy";
-import { useModulesQuery } from "@/framework/modules/get-modules";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { ModulesIcon } from "@/components/ui/icons/ModulesIcon";
+import PlanIncludedModulesSheet from "./PlanIncludedModulesSheet";
+import { ModuleConfig } from "./PlanModuleConfigSheet";
 
 type Props = {
   children: ReactElement;
@@ -37,12 +30,7 @@ type Props = {
 
 const CURRENCY_CODE = [{ value: "INR", name: "INR" }];
 
-const TYPE = [
-  { value: "annual", name: "annual" },
-  { value: "month", name: "month" },
-];
-
-const PLAN_TYPE = [{ value: "pay_as_you_go", name: "paug" }];
+const PLAN_TYPE = [{ value: "paug", name: "paug" }];
 
 const DISCOUNT_TYPE = [
   { value: "percentage", name: "percentage" },
@@ -51,16 +39,8 @@ const DISCOUNT_TYPE = [
 
 const AddPaugSheet = ({ children, data }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-   const [searchTerm, setSearchTerm] = useState("");
+  const [manageModulesOpen, setManageModulesOpen] = useState(false);
   const { mutateAsync } = usePartnerProductMutation();
-  const { data: policies, isLoading } = usePartnerProductPolicyQuery();
-  const Modules = useModulesQuery({
-      per_page: 1000,
-      page: 1,
-      sort: {},
-      filter: {},
-    });
 
   const preventFocus = (event: Event) => {
     event.preventDefault();
@@ -83,7 +63,7 @@ const AddPaugSheet = ({ children, data }: Props) => {
             <CloseIcon className="cursor-pointer w-[15px] h-[15px] text-text-primary" />
           </SheetClose>
           <SheetTitle className="h-full text-text-primary text-xl font-semibold">
-            Add Paug
+            Add Plan
           </SheetTitle>
         </SheetHeader>
 
@@ -91,23 +71,20 @@ const AddPaugSheet = ({ children, data }: Props) => {
           <Formik
             initialValues={{
               name: "",
-              plan_type: "",
+              plan_type: "paug",
               price: "",
               discount_type: "",
               discount_value: "",
-              tax_percentage: 0,
-              included_modules: [] as string[],
               feature: [],
               currency_code: "",
-              policy_id: "",
-              visibility: false,
               status: "ENABLE",
+              included_modules: [] as ModuleConfig[],
             }}
             validationSchema={UiYupPaugSchema}
             onSubmit={async (values, { setErrors }) => {
               const loadingToast = toast.loading("Loading...");
               try {
-                const response = await mutateAsync({
+                await mutateAsync({
                   method: "POST",
                   payload: values,
                 });
@@ -129,9 +106,7 @@ const AddPaugSheet = ({ children, data }: Props) => {
                     SERVER_STATUS_CODE.VALIDATION_ERROR_CODE
                   ) {
                     setErrors(error.response.data.data);
-                  } else {
                   }
-                } else {
                 }
               }
             }}
@@ -148,7 +123,7 @@ const AddPaugSheet = ({ children, data }: Props) => {
               isValid,
             }) => {
               return (
-                <Form className="w-full h-full  flex flex-col px-1">
+                <Form className="w-full h-full flex flex-col px-1">
                   <div className="flex-1 gap-4 space-y-5 ">
                     <div className="w-full space-y-1">
                       <Input
@@ -161,23 +136,6 @@ const AddPaugSheet = ({ children, data }: Props) => {
                         errorKey={errors?.name}
                       />
                     </div>
-                    <div className="w-full space-y-1">
-                      <Text size="sm" tag="label" weight="medium">
-                        Policy
-                      </Text>
-                      <Combobox
-                        options={policies || []}
-                        buttonClassname="w-full"
-                        dropdownClassname={`p-2`}
-                        placeholder={"Select Policy"}
-                        selectedOption={TYPE.find((o) => {
-                          return o.value === values.policy_id;
-                        })}
-                        onSelectData={(name: any) => {
-                          setFieldValue("policy_id", name.value);
-                        }}
-                      />
-                    </div>
 
                     <div className="space-y-1">
                       <Text size="sm" tag="label" weight="medium">
@@ -187,15 +145,53 @@ const AddPaugSheet = ({ children, data }: Props) => {
                         options={PLAN_TYPE}
                         buttonClassname="w-full"
                         dropdownClassname="p-2"
-                        placeholder="select plan"
-                        selectedOption={PLAN_TYPE.find((o) => {
-                          return o.name === values.plan_type;
-                        })}
-                        onSelectData={(type: any) => {
-                          setFieldValue("plan_type", type.name);
+                        placeholder="Select Plan"
+                        selectedOption={PLAN_TYPE.find(
+                          (o) => o.name === values.plan_type
+                        )}
+                        onSelectData={(option: any) => {
+                          setFieldValue("plan_type", option.value);
                         }}
                       />
                     </div>
+
+                    {/* MODULES SECTION */}
+                    <div className="w-full space-y-2 border rounded-md p-4 bg-gray-50/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="p-2 bg-primary-50 rounded-md">
+                            <ModulesIcon className="w-4 h-4 text-primary-600" />
+                          </div>
+                          <div className="flex flex-col">
+                            <Text size="sm" weight="semibold">
+                              Included Modules
+                            </Text>
+                            <Text size="xs" className="text-gray-500">
+                              {values.included_modules.length} modules
+                              configured
+                            </Text>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setManageModulesOpen(true)}
+                        >
+                          Manage
+                        </Button>
+                      </div>
+                    </div>
+
+                    <PlanIncludedModulesSheet
+                      open={manageModulesOpen}
+                      onClose={() => setManageModulesOpen(false)}
+                      modules={values.included_modules}
+                      onChange={(modules) =>
+                        setFieldValue("included_modules", modules)
+                      }
+                    />
+
                     <div className="w-full space-y-1">
                       <Text size="sm" tag="label" weight="medium">
                         Discount
@@ -206,10 +202,10 @@ const AddPaugSheet = ({ children, data }: Props) => {
                         dropdownClassname={`p-2`}
                         placeholder={"Select Discount"}
                         selectedOption={DISCOUNT_TYPE.find((o) => {
-                          return o.name === values.discount_type;
+                          return o.value === values.discount_type;
                         })}
-                        onSelectData={(type: any) => {
-                          setFieldValue("discount_type", type.name);
+                        onSelectData={(name: any) => {
+                          setFieldValue("discount_type", name.value);
                         }}
                       />
                     </div>
@@ -218,7 +214,7 @@ const AddPaugSheet = ({ children, data }: Props) => {
                       <Input
                         name="discount_value"
                         label="Discount Value"
-                        placeholder="Enter a Discount Value"
+                        placeholder="Enter a discount value"
                         onChange={handleChange}
                         value={values.discount_value}
                         errorKey={errors?.discount_value}
@@ -251,129 +247,8 @@ const AddPaugSheet = ({ children, data }: Props) => {
                         }}
                       />
                     </div>
-                    <div className="w-full space-y-1">
-                      <Input
-                        name="tax_percentage"
-                        type="number"
-                        label="Tax Percentage"
-                        placeholder="Enter a tax percentage"
-                        onChange={handleChange}
-                        value={values.tax_percentage}
-                        errorKey={errors?.tax_percentage}
-                      />
-                    </div>
-                    <div className="w-full space-y-1">
-                      <Text size="sm" tag="label" weight="medium">
-                        Module
-                      </Text>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
-                          >
-                            {values.included_modules?.length > 0
-                              ? `${values.included_modules.length} modules selected`
-                              : "Select Modules"}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="w-auto min-w-[400px] max-w-[600px]">
-                          <DialogHeader className="flex flex-row items-center justify-between">
-                            <DialogTitle>Select Modules</DialogTitle>
-                            <DialogClose asChild>
-                              <Button variant="ghost" size="sm">
-                                <CloseIcon className="w-4 h-4" />
-                              </Button>
-                            </DialogClose>
-                          </DialogHeader>
-                          <Input
-                            placeholder="Search modules..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="mb-4"
-                          />
-                          <div className="grid grid-cols-2 gap-5 max-h-80 overflow-y-auto p-2">
-                            {(Modules?.data?.items || [])
-                              .filter(
-                                (item: any) =>
-                                  item.is_active === true &&
-                                  item.module_id
-                                    .toLowerCase()
-                                    .includes(searchTerm.toLowerCase())
-                              )
-                              .map((module: any) => (
-                                <div
-                                  key={module.module_id}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    id={module.module_id}
-                                    checked={
-                                      values.included_modules?.includes(
-                                        module.module_id
-                                      ) || false
-                                    }
-                                    onChange={(e) => {
-                                      const currentModules = Array.isArray(
-                                        values.included_modules
-                                      )
-                                        ? values.included_modules
-                                        : [];
-                                      const newModules = e.target.checked
-                                        ? [...currentModules, module.module_id]
-                                        : currentModules.filter(
-                                            (id: string) =>
-                                              id !== module.module_id
-                                          );
-                                      setFieldValue(
-                                        "included_modules",
-                                        newModules
-                                      );
-                                    }}
-                                    className="w-4 h-4 cursor-pointer"
-                                  />
-                                  <label
-                                    htmlFor={module.module_id}
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    {module.module_id}
-                                  </label>
-                                </div>
-                              ))}
-                          </div>
-                          <div className="flex justify-end pt-4">
-                            <DialogClose asChild>
-                              <Button>Save</Button>
-                            </DialogClose>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                     <ErrorMessage name="included_modules" component={"p"} className="text-xs text-red-500" />
-                    </div>
+
                     <PlanFormLists />
-                    <div className="flex items-center space-x-2">
-                      <Text size="sm" weight="semibold" color="primary">
-                        Visibility
-                      </Text>
-                      <button
-                        type="button"
-                        className={`w-12 h-6 rounded-full flex items-center transition duration-300 ease-in-out ${
-                          values.visibility ? "bg-primary" : "bg-gray-300"
-                        }`}
-                        onClick={() =>
-                          setFieldValue("visibility", !values.visibility)
-                        }
-                      >
-                        <div
-                          className={`w-4 h-4 bg-white rounded-full shadow-md transform ${
-                            values.visibility
-                              ? "translate-x-6"
-                              : "translate-x-1"
-                          } transition duration-300 ease-in-out`}
-                        />
-                      </button>
-                    </div>
 
                     <Text size="sm" weight="semibold" color="primary">
                       Status
@@ -407,7 +282,7 @@ const AddPaugSheet = ({ children, data }: Props) => {
                       }}
                       disabled={isSubmitting}
                     >
-                      Add Paug
+                      Add Plan
                     </Button>
                     <Button
                       type="button"

@@ -22,6 +22,8 @@ import { usePartnerProductMutation } from "@/framework/partner/partner-product-m
 import AddPaugSheet from "./Addpaugsheet";
 import EditPaugSheet from "./EditPaugSheet";
 import { Badge } from "@/components/ui/badge";
+import { AccessIcon } from "@/components/ui/icons/AccessIcon";
+import PlanNodeAccessSheet from "./PlanNodeAccessSheet";
 
 const STATUS = [
   { value: "", name: "All" },
@@ -296,6 +298,10 @@ export const PlanList = (props: Props) => {
                 <EditIcon className="w-4 h-4 cursor-pointer text-green-600" />
               </EditPlanSheet>
             )}
+            
+            <PlanNodeAccessSheet data={plan}>
+                <AccessIcon className="w-5 h-5 cursor-pointer text-gray-500 hover:text-primary-500" />
+            </PlanNodeAccessSheet>
           </div>
         );
       },

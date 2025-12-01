@@ -20,11 +20,12 @@ export interface WorkspaceBillingInfo {
   zip_code: string;
 }
 
-// Updated interface for Node Permissions with array hint
+// Updated interface for Node Permissions: Removed hint array, added single string hint
 interface INodePermission {
   name: string;
   id: string;
-  hint?: string[]; // Changed to array of strings
+  enabled: boolean;
+  hint?: string; // Added hint as optional string
 }
 
 interface IWorkspaceAccount extends Document {
@@ -83,11 +84,12 @@ interface IWorkspaceMethods {}
 
 type WorkspaceModel = Model<IWorkspaceAccount, {}, IWorkspaceMethods>;
 
-// Updated Schema for Node Permission
+// Updated Schema for Node Permission: Added hint string
 const NodePermissionSchema = new Schema({
   name: { type: String, required: true },
   id: { type: String, required: true },
-  hint: { type: [String], default: [] }, // Changed type to array of Strings
+  enabled: { type: Boolean, default: false },
+  hint: { type: String, enum: ["free", "pro", "enterprise"], default: "free" }, // Added hint field
 });
 
 const WorkspaceModelSchema = new Schema<

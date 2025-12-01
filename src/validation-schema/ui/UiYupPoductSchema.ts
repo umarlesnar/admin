@@ -14,6 +14,15 @@ export const UiYupProductSchema = Yup.object().shape({
   status: Yup.string().required("Status is required"),
   currency_code: Yup.string().required("Currency code is required"),
   r_plan_id: Yup.string(),
+  included_modules: Yup.array().of(
+    Yup.object().shape({
+      module_id: Yup.string().required("Module ID is required"),
+      enabled: Yup.boolean().default(true),
+      is_visibility: Yup.boolean().default(true),
+      config: Yup.object().nullable(),
+    })
+  ),
+  nodes_access: Yup.mixed(),
 });
 
 export const UiYupPaugSchema = Yup.object().shape({
@@ -27,4 +36,12 @@ export const UiYupPaugSchema = Yup.object().shape({
   feature: Yup.mixed().required("Feature is required"),
   status: Yup.string().required("Status is required"),
   currency_code: Yup.string().required("Currency code is required"),
+  included_modules: Yup.array().of(
+    Yup.object().shape({
+      module_id: Yup.string().required("Module ID is required"),
+      enabled: Yup.boolean().default(true),
+      is_visibility: Yup.boolean().default(true),
+      config: Yup.object().nullable(),
+    })
+  ),
 });

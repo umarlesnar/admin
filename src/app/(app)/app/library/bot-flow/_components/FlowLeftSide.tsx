@@ -31,6 +31,7 @@ import { RazorPayBrandIcon } from "@/components/ui/integration-icons/RazorPayBra
 import { SequenceIcon } from "@/components/ui/icons/SequenceIcon";
 import { TransformIcon } from "@/components/ui/icons/TransformIcon";
 import { NotesIcon } from "@/components/ui/icons/NotesIcon";
+import { WebViewIcon } from "@/components/ui/icons/WebViewIcon";
 
 type Props = {};
 
@@ -215,6 +216,27 @@ const FlowLeftSide = (props: Props) => {
             >
               <ListFlowIcon className="w-5 h-5 text-orange-400" />
               <Text>Lists</Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() =>
+                setNewNode &&
+                setNewNode("webview", "webview", {
+                  flow_replies: {
+                    header_text: "",
+                    body_text: "",
+                    footer_text: "",
+                    url: "",
+                    button_text: "Visit",
+                  },
+                  node_result_id: "",
+                })
+              }
+            >
+              <WebViewIcon className="w-5 h-5 text-orange-400" />
+              <Text size="xs" className="text-center text-[11px]">
+                Webview
+              </Text>
             </div>
             <div
               className="w-full h-10 border border-border-teritary rounded-md flex items-center gap-3 p-3 cursor-pointer"

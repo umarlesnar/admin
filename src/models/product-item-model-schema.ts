@@ -29,8 +29,14 @@ interface IProductItem extends Document {
   currency_code: string;
   policy_id: ObjectId;
   trial_duration: number;
-  visibility:Schema.Types.Boolean;
-  included_modules:Schema.Types.Mixed;
+  visibility: Schema.Types.Boolean;
+  included_modules: {
+    module_id: string;
+    enabled: boolean;
+    is_visibility: boolean;
+    config: Record<string, any>;
+  }[];
+  nodes_access: Schema.Types.Mixed;
 }
 type ProductItemModel = Model<IProductItem>;
 const ProductItemModelSchema = new Schema<IProductItem, ProductItemModel>({
@@ -54,8 +60,16 @@ const ProductItemModelSchema = new Schema<IProductItem, ProductItemModel>({
   currency_code: { type: Schema.Types.String },
   policy_id: { type: Schema.Types.ObjectId },
   trial_duration: { type: Schema.Types.Number, default: 0 },
-  visibility:{type:Schema.Types.Boolean , default:false},
-  included_modules:{type:Schema.Types.Mixed}
+  visibility: { type: Schema.Types.Boolean, default: false },
+  included_modules: [
+    {
+      module_id: { type: Schema.Types.String },
+      enabled: { type: Schema.Types.Boolean, default: true },
+      is_visibility: { type: Schema.Types.Boolean, default: true },
+      config: { type: Schema.Types.Mixed, default: {} },
+    },
+  ],
+  nodes_access: { type: Schema.Types.Mixed },
 });
 //ProductItemModelSchema.index({ expired_at: 1 }, { expireAfterSeconds: 0 });
 export default models.product_item ||
