@@ -161,8 +161,7 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
         product_id: data?._id,
         method: "PUT",
         payload: {
-          ...data,
-          nodes_access: nodesAccess, // Save the full structure with enabled flags and hint
+          nodes_access: nodesAccess,
         },
       });
       

@@ -11,6 +11,8 @@ interface IIntegration extends Document {
   category: Schema.Types.String;
   status: Schema.Types.String;
   link: Schema.Types.String;
+  is_micro_app: Schema.Types.Boolean;
+  configuration: Schema.Types.Mixed;
   coming_soon: Schema.Types.Boolean;
   sort_order: Schema.Types.Number;
   created_at: Date;
@@ -37,6 +39,8 @@ const IntegrationSchema = new Schema<
   category: { type: Schema.Types.String },
   status: { type: Schema.Types.String, default: "ENABLED" },
   link: { type: Schema.Types.String },
+  is_micro_app: { type: Schema.Types.Boolean, default: false },
+  configuration: { type: Schema.Types.Mixed },
   coming_soon: { type: Schema.Types.Boolean, default: false },
   sort_order: { type: Schema.Types.Number, default: 0 },
   created_at: { type: Schema.Types.Date, default: new Date() },

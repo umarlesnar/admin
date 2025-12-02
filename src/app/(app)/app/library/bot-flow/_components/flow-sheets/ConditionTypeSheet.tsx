@@ -55,7 +55,7 @@ const ConditionTypeSheet = ({ children, data, id }: Props) => {
         condition_operator: 1,
         flow_node_conditions: [
           {
-            id: "as",
+            id: Math.random().toString(20).slice(2),
             flow_condition_type: 1,
             variable: "@ans",
             value: "Yes",

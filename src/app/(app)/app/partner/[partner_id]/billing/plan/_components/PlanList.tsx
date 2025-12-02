@@ -149,7 +149,7 @@ export const PlanList = (props: Props) => {
       header: "Name & Type",
       cell: ({ row }: any) => {
         const name = row?.original?.name || "----";
-        const type = row?.original?.type?.toLowerCase() || "----";
+        const type = row?.original?.type?.toLowerCase();
 
         const badgeClass =
           type === "annual"
@@ -161,9 +161,11 @@ export const PlanList = (props: Props) => {
         return (
           <div className="flex gap-2">
             <div className="font-medium text-text-secondary">{name}</div>
-            <Badge className={badgeClass} variant="default">
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </Badge>
+            {type && (
+              <Badge className={badgeClass} variant="default">
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </Badge>
+            )}
           </div>
         );
       },

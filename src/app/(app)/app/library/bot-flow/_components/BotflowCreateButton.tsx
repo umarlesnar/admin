@@ -28,7 +28,7 @@ export function BotFlowCreateButton() {
   const [industries, setIndustries] = useState<string | null>(null);
   const [industryId, setIndustryId] = useState<string | null>(null);
   const [useCase, setUseCase] = useState<string | null>(null);
-  const { nodes, edges, industry, use_case }: any =
+  const { nodes, edges,resetStore}: any =
     useStore();
 
   const { data: industriesData } = useIndustries({});
@@ -38,9 +38,13 @@ export function BotFlowCreateButton() {
   });
 
   useEffect(() => {
-    setIndustries(industry);
-    setUseCase(use_case);
-  }, [industry, use_case]);
+    if (open) {
+      resetStore(); 
+      setIndustries(null);
+      setIndustryId(null);
+      setUseCase(null);
+    }
+  }, [open, resetStore]);
 
   return (
     <Formik
@@ -49,8 +53,8 @@ export function BotFlowCreateButton() {
         nodes: [],
         edges: [],
         description: "",
+        industry:"",
         use_case: "",
-        industry: "",
       }}
       onSubmit={async (values) => {
         const loadingToast = toast.loading("Loading...");
@@ -62,14 +66,15 @@ export function BotFlowCreateButton() {
               nodes: nodes,
               edges: edges,
               description: values.description,
-              industry: industries || "UTILITY", 
-              use_case: useCase || "UTILITY", 
+              industry: industries, 
+              use_case: useCase, 
             },
           });
           toast.success(`Bot flow created successfully`, {
             id: loadingToast,
           });
           setOpen(false);
+          resetStore();
         } catch (error) {
           toast.error(`Failed to create Bot flow`, {
             id: loadingToast,
@@ -142,6 +147,7 @@ export function BotFlowCreateButton() {
                   onSelectData={(selectedIndustry: any) => {
                     setIndustries(selectedIndustry?.name);
                     setIndustryId(selectedIndustry?._id);
+                    setUseCase(null);
                   }}
                 />
               </div>

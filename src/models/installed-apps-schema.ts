@@ -6,6 +6,7 @@ interface IInstalledApps extends Document {
   data: Schema.Types.Mixed;
   credential_id: Schema.Types.ObjectId;
   updated_at: Schema.Types.Mixed;
+  is_micro_app: Schema.Types.Boolean;
   user_id: Schema.Types.ObjectId;
   configuration: Schema.Types.Mixed;
 }
@@ -16,6 +17,7 @@ const InstalledAppsSchema = new Schema<IInstalledApps, InstalledAppsModel>({
   data: { type: Schema.Types.Mixed },
   credential_id: { type: Schema.Types.ObjectId },
   updated_at: { type: Schema.Types.Number },
+  is_micro_app: { type: Schema.Types.Boolean, default: false },
   user_id: { type: Schema.Types.ObjectId },
   configuration: { type: Schema.Types.Mixed },
 });

@@ -46,7 +46,7 @@ const SwitchTypeSheet = ({ children, data, id }: Props) => {
 
         switch_conditions: [
           {
-            id: "as",
+            id: Math.random().toString(20).slice(2),
             rule: 1,
             type: 1,
             text: "",

@@ -35,6 +35,8 @@ import NoteType from "./types/NoteType";
 import AskMediaType from "./types/AskMediaType";
 import SequenceType from "./types/SequenceType";
 import WebViewType from "./types/WebViewType";
+import CustomAttributeType from "./types/CustomAttributeType";
+import TriggerChatbotType from "./types/TriggerChatbotType";
 
 type Props = {};
 
@@ -102,6 +104,10 @@ const nodeColor = (node: any) => {
       return "green";
     case "webview":
       return "orange";
+      case "custom_attribute":
+        return "blue";
+    case "trigger_chatbot":
+        return "orange";
     default:
       return "#eee";
   }
@@ -144,6 +150,8 @@ const FlowRightSide = (props: Props) => {
       askAddress: AskAddressType,
       askMedia: AskMediaType,
       webview: WebViewType,
+      custom_attribute: CustomAttributeType,
+      trigger_chatbot: TriggerChatbotType,
     }),
     []
   );

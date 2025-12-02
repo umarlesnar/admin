@@ -15,6 +15,9 @@ import { WebhookIcon } from "@/components/ui/icons/WebhookIcon";
 import { OrderStatusIcon } from "@/components/ui/icons/OrderStatusIcon";
 import { TransformIcon } from "@/components/ui/icons/TransformIcon";
 import { NotesIcon } from "@/components/ui/icons/NotesIcon";
+import { AttributeIcon } from "@/components/ui/icons/AttributeIcon";
+import { BotIcon } from "@/components/ui/icons/BotIcon";
+import { UserIcon } from "@/components/ui/icons/userIcon";
 
 export function WorkflowNodeList({ children }: any) {
   const [open, setOpen] = useState(false);
@@ -187,7 +190,7 @@ return result;
                 condition_operator: 0,
                 flow_node_conditions: [
                   {
-                    id: "as",
+                    id: Math.random().toString(20).slice(2),
                     flow_condition_type: 1,
                     variable: "",
                     value: "",
@@ -261,6 +264,52 @@ return result;
         >
           <WebhookIcon className="w-5 h-5 text-icon-primary" />
           <Text>Webhook</Text>
+        </div>
+        <div
+          className="flex items-center gap-3 p-4 rounded-md border border-border-teritary cursor-pointer"
+          onClick={() => {
+            setNewNode &&
+              setNewNode("custom_attribute", "custom_attribute", {
+                custom_params: {},
+                wa_id: "",
+              });
+          }}
+        >
+          <AttributeIcon className="w-5 h-5 text-icon-primary" />
+          <Text size="xs" className="text-center text-[11px]">
+            Update Attribute
+          </Text>
+        </div>
+        <div
+          className="flex items-center gap-3 p-4 rounded-md border border-border-teritary cursor-pointer"
+          onClick={() => {
+            setNewNode &&
+              setNewNode("trigger_chatbot", "trigger_chatbot", {
+                flow_id: "",
+                wa_id: "",
+              });
+          }}
+        >
+          <BotIcon className="w-5 h-5 text-icon-primary" />
+          <Text size="xs" className="text-center text-[11px]">
+            Trigger Chatbot
+          </Text>
+        </div>
+        <div
+          className="flex items-center gap-3 p-4 rounded-md border border-border-teritary cursor-pointer"
+          onClick={() => {
+            setNewNode &&
+              setNewNode("customer", "customer", {
+                wa_id: "",
+                mode:"upsert",
+                custom_params: {},
+              });
+          }}
+        >
+          <UserIcon className="w-5 h-5 text-icon-primary" />
+          <Text size="xs" className="text-center text-[11px]">
+            Customer
+          </Text>
         </div>
       </PopoverContent>
     </Popover>

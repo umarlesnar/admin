@@ -202,6 +202,7 @@ export const WorkspaceLists = (props: Props) => {
     {
       accessorKey: "owner_username",
       header: "Owner",
+      size: 240,
       cell: ({ row }: any) => (
         <div className="w-72">
           <Text className="text-sm truncate">

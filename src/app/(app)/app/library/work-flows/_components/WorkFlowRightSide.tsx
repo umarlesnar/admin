@@ -14,6 +14,9 @@ import WorkflowOrderDetailsType from "./workflow-types/OrderDetailsType";
 import WorkflowOrderStatusType from "./workflow-types/OrderStatusType";
 import WorkflowTransformType from "./workflow-types/TransformType";
 import NoteType from "./workflow-types/NoteType";
+import WorkflowCustomAttributeType from "./workflow-types/CustomAttributeType";
+import WorkflowTriggerChatbotType from "./workflow-types/TriggerChatbotType";
+import WorkflowCustomerType from "./workflow-types/CustomerType";
 type Props = {};
 
 const nodeColor = (node: any) => {
@@ -40,6 +43,12 @@ const nodeColor = (node: any) => {
       return "yellow";
     case "order_details":
       return "green";
+    case "custom_attribute":
+      return "blue";
+    case "trigger_chatbot":
+      return "orange";
+    case "customer":
+      return "violet"; 
     default:
       return "#eee";
   }
@@ -62,6 +71,9 @@ const WorkFlow = (props: Props) => {
       webhook: WorkflowWebhookType,
       order_details: WorkflowOrderDetailsType,
       whatsapp_order_status: WorkflowOrderStatusType,
+      custom_attribute: WorkflowCustomAttributeType,
+      trigger_chatbot: WorkflowTriggerChatbotType,
+      customer: WorkflowCustomerType,
     }),
     []
   );

@@ -80,7 +80,7 @@ router
         filterQuery = filteredObject;
       }
 
-      let sortQuery: any = { r_end_at: -1 };
+      let sortQuery: any = { _id: -1 };
 
       let finalFilterQuery = {
         workspace_id: params.workspace_id,

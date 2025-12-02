@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import _omit from "lodash/omit";
 import { yupToFormErrorsServer } from "@/lib/utils/formik/yup-to-form-errors";
 import productItemModelSchema from "@/models/product-item-model-schema";
-import { yupProductSchema } from "@/validation-schema/api/yup-product-schema";
+import { yupNodeAccessSchema, yupProductSchema } from "@/validation-schema/api/yup-product-schema";
 import { apiMiddlerware } from "@/middleware/apiMiddleware";
 import partnersModelSchema from "@/models/partners-model-schema";
 
@@ -63,7 +63,7 @@ router
 
     //step 1
     try {
-      ProductValidateBody = yupProductSchema.validateSync(body);
+      ProductValidateBody = yupNodeAccessSchema.validateSync(body);
     } catch (error) {
       const errorObj = yupToFormErrorsServer(error);
 

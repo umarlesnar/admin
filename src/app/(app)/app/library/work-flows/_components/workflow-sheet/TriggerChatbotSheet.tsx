@@ -8,26 +8,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ErrorMessage, Formik } from "formik";
-import React, { ReactElement, useState } from "react";
-import useStore from "../store";
-import Text from "@/components/ui/text";
-import { Textarea } from "@/components/ui/textarea";
+import { Formik } from "formik";
+import React, { ReactElement, useEffect, useState } from "react";
+import { Combobox } from "@/components/ui/combobox";
+import useWorkflowStore from "../WorkflowStore";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   children: ReactElement;
-  data?: any;
+  sheetData?: any;
   id?: any;
 };
 
-const NoteTypeSheet = ({ children, data, id }: Props) => {
+const WorkflowTriggerChatbotSheet = ({ children, sheetData, id }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
-  const { updateNodeData } = useStore();
+  const { updateNodeData } = useWorkflowStore();
+  // const { data } = useAvailableBotflowQuery();
+
   return (
     <Formik
       initialValues={{
-        text: "",
-        ...data,
+        flow_id: "",
+        wa_id:"",
+        ...sheetData,
       }}
       onSubmit={(values) => {
         if (typeof updateNodeData == "function") {
@@ -38,54 +41,49 @@ const NoteTypeSheet = ({ children, data, id }: Props) => {
       }}
       enableReinitialize
     >
-      {({
-        values,
-        errors,
-        setFieldValue,
-        handleSubmit,
-        resetForm,
-        handleChange,
-      }) => {
+      {({ values, setFieldValue, handleSubmit, resetForm, handleChange }) => {
         return (
           <Sheet
             open={open}
             onOpenChange={(value) => {
               setOpen(value);
-              resetForm(data?.flow_replies);
+              // resetForm(data?.flow_replies);
             }}
           >
             <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent className="w-[390px] sm:w-[500px] h-screen flex flex-col p-5">
+            <SheetContent className="w-[390px] sm:w-[400px] h-screen flex flex-col p-5">
               <SheetHeader className="flex flex-row items-center gap-4">
                 <SheetClose asChild>
                   <CloseIcon className="cursor-pointer w-[15px] h-[15px] text-text-primary" />
                 </SheetClose>
                 <SheetTitle className="h-full text-text-primary text-xl font-semibold">
-                  Note
+                  Trigger Chatbot
                 </SheetTitle>
               </SheetHeader>
 
               {/* form body */}
-              <div className="flex flex-1 flex-col px-1 py-2 overflow-auto bg-scroll space-y-3">
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Text
-                    <span className="text-sm text-red-500 ml-[2px]">*</span>
-                  </Text>
-                  <Textarea
-                    name="text"
-                    onChange={handleChange}
-                    placeholder="Enter Your Text"
-                    value={values?.text}
-                    style={{ height: "400px" }}
-                  />
-
-                  <ErrorMessage
-                    component={"p"}
-                    name="text"
-                    className="test-sm font-normal text-red-500"
-                  />
-                </div>
+              <div className="flex flex-1 flex-col px-1 py-4 overflow-auto bg-scroll space-y-4">
+              <Input
+                  name="wa_id"
+                  label="Phone Number"
+                  placeholder="Enter Phone Number"
+                  onChange={handleChange}
+                  value={values?.wa_id}
+                  isRequired
+                />
+                <Combobox
+                  label="Flow"
+                  name="flow"
+                  placeholder="Select Flow"
+                  value={values.flow || ""}
+                  // options={data || []}
+                  // selectedOption={data?.find((o: any) => {
+                  //   return o._id == values.flow_id;
+                  // })}
+                  onSelectData={(value: any) => {
+                    setFieldValue("flow_id", value._id);
+                  }}
+                />
               </div>
 
               <div className="w-full flex items-center gap-2 ">
@@ -114,4 +112,4 @@ const NoteTypeSheet = ({ children, data, id }: Props) => {
   );
 };
 
-export default NoteTypeSheet;
+export default WorkflowTriggerChatbotSheet;

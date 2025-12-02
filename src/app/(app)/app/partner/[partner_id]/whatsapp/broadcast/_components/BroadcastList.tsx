@@ -191,6 +191,7 @@ export const BroadcastList = (props: Props) => {
     {
       accessorKey: "template_name",
       header: "Template Name",
+      size: 240,
       cell: ({ row }: any) => {
         return (
           <div className="flex items-center gap-2 font-medium text-text-secondary">

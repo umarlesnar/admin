@@ -28,3 +28,7 @@ export const yupProductSortQuery = Yup.object().shape({
   created_at: Yup.number().oneOf([1, -1]),
   updated_at: Yup.number().oneOf([1, -1]),
 });
+
+export const yupNodeAccessSchema = Yup.object().shape({
+  nodes_access: Yup.mixed(),
+});

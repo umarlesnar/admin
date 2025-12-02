@@ -91,6 +91,12 @@ const AddIntegrationSheet = ({ children, data }: Props) => {
               category: "",
               link: "",
               coming_soon: false,
+              is_micro_app: false,
+              configuration: {
+                app_id: "",
+                app_name: "",
+                app_url: "",
+              },
               status: "ENABLE",
             }}
             onSubmit={async (values, { setErrors, resetForm }) => {
@@ -336,6 +342,61 @@ const AddIntegrationSheet = ({ children, data }: Props) => {
                         value={values.link}
                         errorKey={errors?.link}
                       />
+                    </div>
+                    <div className="w-full space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Text size="sm" tag="label" weight="medium">
+                          Micro App
+                        </Text>
+                        <Switch
+                          checked={values.is_micro_app}
+                          onCheckedChange={(checked) => {
+                            setFieldValue("is_micro_app", checked);
+                            if (!checked) {
+                              setFieldValue("configuration", {
+                                app_id: "",
+                                app_name: "",
+                                app_url: "",
+                              });
+                            }
+                          }}
+                        />
+                      </div>
+
+                      {values.is_micro_app && (
+                        <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+                          <Text size="sm" weight="medium" color="secondary">
+                            Configuration
+                          </Text>
+                          <Input
+                            name="configuration.app_id"
+                            label="App ID"
+                            placeholder="Enter app ID"
+                            onChange={(e) =>
+                              setFieldValue("configuration.app_id", e.target.value)
+                            }
+                            value={values.configuration.app_id}
+                          />
+                          <Input
+                            name="configuration.app_name"
+                            label="App Name"
+                            placeholder="Enter app name"
+                            onChange={(e) =>
+                              setFieldValue("configuration.app_name", e.target.value)
+                            }
+                            value={values.configuration.app_name}
+                          />
+                          <Input
+                            name="configuration.app_url"
+                            label="App URL"
+                            placeholder="Enter app URL"
+                            onChange={(e) =>
+                              setFieldValue("configuration.app_url", e.target.value)
+                            }
+                            value={values.configuration.app_url}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <Text size="sm" weight="semibold" color="secondary">

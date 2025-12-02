@@ -32,6 +32,8 @@ import { SequenceIcon } from "@/components/ui/icons/SequenceIcon";
 import { TransformIcon } from "@/components/ui/icons/TransformIcon";
 import { NotesIcon } from "@/components/ui/icons/NotesIcon";
 import { WebViewIcon } from "@/components/ui/icons/WebViewIcon";
+import { BotIcon } from "@/components/ui/icons/BotIcon";
+import { AttributeIcon } from "@/components/ui/icons/AttributeIcon";
 
 type Props = {};
 
@@ -174,7 +176,7 @@ const FlowLeftSide = (props: Props) => {
                   user_input_variable: "@action",
                   expected_answers: [
                     {
-                      id: "54035d4ffcii7",
+                      id: Math.random().toString(20).slice(2),
                       expected_input: "",
                       isDefault: false,
                       node_result_id: "",
@@ -237,58 +239,6 @@ const FlowLeftSide = (props: Props) => {
               <Text size="xs" className="text-center text-[11px]">
                 Webview
               </Text>
-            </div>
-            <div
-              className="w-full h-10 border border-border-teritary rounded-md flex items-center gap-3 p-3 cursor-pointer"
-              onClick={() =>
-                setNewNode &&
-                setNewNode("condition", "condition", {
-                  condition_result: {
-                    y_result_node_id: "",
-                    n_result_node_id: "",
-                  },
-                  condition_operator: 0,
-                  flow_node_conditions: [
-                    {
-                      id: "as",
-                      flow_condition_type: 1,
-                      variable: "",
-                      value: "",
-                    },
-                  ],
-                })
-              }
-            >
-              <ConditionIcon className="w-5 h-5 text-violet-400" />
-              <Text>Set a condition</Text>
-            </div>
-            <div
-              className="w-full h-10 border border-border-teritary rounded-md flex items-center gap-3 p-3 cursor-pointer"
-              onClick={() =>
-                setNewNode &&
-                setNewNode("switch", "switch_condition", {
-                  input_variable: "",
-
-                  switch_conditions: [
-                    {
-                      id: "as",
-                      rule: 1,
-                      type: 1,
-                      text: "",
-                      node_result_id: "",
-                    },
-                  ],
-                  default_condition: {
-                    id: "default",
-                    rule: 0,
-                    type: 0,
-                    text: "Default",
-                  },
-                })
-              }
-            >
-              <SwitchIcon className="w-6 h-6 text-violet-400" />
-              <Text>Switch</Text>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -388,6 +338,34 @@ const FlowLeftSide = (props: Props) => {
               <SequenceIcon className="w-5 h-5 text-icon-primary" />
               <Text size="xs" className="text-center text-[11px]">
                 Assign Sequence
+              </Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() => {
+                setNewNode &&
+                  setNewNode("custom_attribute", "custom_attribute", {
+                    custom_params:{},
+                  });
+              }}
+            >
+              <AttributeIcon className="w-5 h-5 text-icon-primary" />
+              <Text size="xs" className="text-center text-[11px]">
+                Update Attribute
+              </Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() => {
+                setNewNode &&
+                  setNewNode("trigger_chatbot", "trigger_chatbot", {
+                    flow_id: "",
+                  });
+              }}
+            >
+              <BotIcon className="w-5 h-5 text-icon-primary" />
+              <Text size="xs" className="text-center text-[11px]">
+                Trigger Chatbot
               </Text>
             </div>
           </AccordionContent>
@@ -642,7 +620,7 @@ const FlowLeftSide = (props: Props) => {
                   condition_operator: 0,
                   flow_node_conditions: [
                     {
-                      id: "as",
+                      id: Math.random().toString(20).slice(2),
                       flow_condition_type: 1,
                       variable: "",
                       value: "",
@@ -652,7 +630,7 @@ const FlowLeftSide = (props: Props) => {
               }
             >
               <ConditionIcon className="w-5 h-5 text-violet-400" />
-              <Text>Set a condition</Text>
+              <Text>condition</Text>
             </div>
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
@@ -663,7 +641,7 @@ const FlowLeftSide = (props: Props) => {
 
                   switch_conditions: [
                     {
-                      id: "as",
+                      id: Math.random().toString(20).slice(2),
                       rule: 1,
                       type: 1,
                       text: "",

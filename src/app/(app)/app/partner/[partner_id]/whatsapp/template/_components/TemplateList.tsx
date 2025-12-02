@@ -186,6 +186,7 @@ export const TemplateList = (props: Props) => {
     {
       accessorKey: "name",
       header: "Template Name",
+      size: 240,
       cell: ({ row }: any) => {
         return (
           <Text weight="regular" color="primary">

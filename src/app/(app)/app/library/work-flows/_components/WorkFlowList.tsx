@@ -43,6 +43,9 @@ const WorkFlowList = (props: Props) => {
     filter: {
       status: "",
     },
+    sort: {
+      created_at: -1,
+    },
   });
   const [pagination, setPagination] = useState<any>({
     per_page: 20,
@@ -114,6 +117,7 @@ const WorkFlowList = (props: Props) => {
       },
       {
         accessorKey: "description",
+        size: 240,
         header: () => (
           <Text weight="semibold" color="secondary">
             Description

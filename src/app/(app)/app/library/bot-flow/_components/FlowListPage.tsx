@@ -31,6 +31,7 @@ const FlowListPage = (props: Props) => {
     page: 1,
     q: "",
     filter: JSON.stringify({}),
+    sort: JSON.stringify({ created_at: -1 }),
   });
   const [pagination, setPagination] = useState<any>({
     per_page: 20,
@@ -38,6 +39,7 @@ const FlowListPage = (props: Props) => {
     total_result: 0,
     current_page: 1,
   });
+  
 
   const { data, isLoading, refetch } = useBotFlowLibrary(queryPage);
   const { mutateAsync } = useBotFlowLibraryMutation();
@@ -102,6 +104,7 @@ const FlowListPage = (props: Props) => {
       },
       {
         accessorKey: "description",
+        size: 240,
         header: () => (
           <Text weight="semibold" color="secondary">
             Description

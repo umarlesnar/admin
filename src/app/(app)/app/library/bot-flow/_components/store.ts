@@ -21,6 +21,7 @@ type RFState = {
   edges: Edge[];
   status: String;
   description: string;
+  
 
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
@@ -38,7 +39,8 @@ type RFState = {
   setIndustryName?: (data: any) => void;
   setUsecaseName?: (data: any) => void;
   setFlowStatus?: (data: any) => void;
-  setDescription: (description: string) => void; // Add this
+  setDescription: (description: string) => void; 
+  resetStore?: () => void
 };
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
@@ -219,6 +221,18 @@ const useStore = create<RFState>((set, get) => ({
 
     set({
       nodes: [...temp_arr],
+    });
+  },
+  resetStore: () => {
+    set({
+      name: "",
+      industry: "",
+      use_case: "",
+      nodes: [],
+      edges: [],
+      variables: [],
+      description: "",
+      status: "",
     });
   },
 }));

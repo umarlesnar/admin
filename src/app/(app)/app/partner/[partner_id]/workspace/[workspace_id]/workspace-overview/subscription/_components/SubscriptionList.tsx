@@ -22,6 +22,7 @@ import { useSubcriptionQuery } from "@/framework/partner/workspace/subscription/
 import { useWorkspaceSubscriptionCancelMutation } from "@/framework/partner/workspace/subscription/subscription-cancel-mutation";
 import { EditIcon } from "@/components/ui/icons/EditIcone";
 import EditSubscriptionDateSheet from "./EditDateForm";
+import RenewSubscriptionSheet from "./RenewSubscriptionSheet";
 
 const STATUS = [
   { value: "", name: "All" },
@@ -57,7 +58,7 @@ export const SubscriptionList = (props: Props) => {
       filter: safeJSONParse(searchParams.get("filter"), {
         status: "",
       }),
-      sort: safeJSONParse(searchParams.get("sort"), { _id: "-1" }),
+      sort: safeJSONParse(searchParams.get("sort"), { _id: -1 }),
     };
   });
 
@@ -268,9 +269,22 @@ export const SubscriptionList = (props: Props) => {
       header: "Actions",
       cell: ({ row }: any) => (
         <div className="flex items-center gap-3">
+          
+          {/* Edit Date (Existing) */}
           <EditSubscriptionDateSheet data={row?.original}>
             <EditIcon className="w-4 h-4 cursor-pointer text-green-600" />
           </EditSubscriptionDateSheet>
+
+          {/* RENEW BUTTON: Only for completed subscriptions */}
+          {row.original.status === "completed" && (
+            <RenewSubscriptionSheet subscription={row.original}>
+               <div className="cursor-pointer text-blue-600 hover:text-blue-800" title="Renew Plan">
+                Renew
+               </div>
+            </RenewSubscriptionSheet>
+          )}
+
+          {/* Cancel Button (Existing) */}
           {row.original.status == "active" && (
             <Button
               size="sm"
