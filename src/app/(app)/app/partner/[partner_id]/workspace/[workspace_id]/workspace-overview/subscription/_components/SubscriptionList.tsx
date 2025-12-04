@@ -267,50 +267,55 @@ export const SubscriptionList = (props: Props) => {
     {
       id: "action",
       header: "Actions",
-      cell: ({ row }: any) => (
-        <div className="flex items-center gap-3">
-          
-          {/* Edit Date (Existing) */}
-          <EditSubscriptionDateSheet data={row?.original}>
-            <EditIcon className="w-4 h-4 cursor-pointer text-green-600" />
-          </EditSubscriptionDateSheet>
+      cell: ({ row }: any) => {
+        const isExpired = row?.original?.r_current_end_at 
+          ? moment.unix(row.original.r_current_end_at).isBefore(moment()) 
+          : false;
+        
+        return (
+          <div className="flex items-center gap-3">
+            {/* Edit Date (Existing) */}
+            <EditSubscriptionDateSheet data={row?.original}>
+              <EditIcon className="w-4 h-4 cursor-pointer text-green-600" />
+            </EditSubscriptionDateSheet>
 
-          {/* RENEW BUTTON: Only for completed subscriptions */}
-          {row.original.status === "completed" && (
-            <RenewSubscriptionSheet subscription={row.original}>
-               <div className="cursor-pointer text-blue-600 hover:text-blue-800" title="Renew Plan">
-                Renew
-               </div>
-            </RenewSubscriptionSheet>
-          )}
+            {/* RENEW BUTTON: Show if expired (unless cancelled) */}
+            {row.original.status !== "cancelled" && isExpired && (
+              <RenewSubscriptionSheet subscription={row.original}>
+                 <Button size="sm">
+                  Renew
+                 </Button>
+              </RenewSubscriptionSheet>
+            )}
 
-          {/* Cancel Button (Existing) */}
-          {row.original.status == "active" && (
-            <Button
-              size="sm"
-              variant="destructive"
-              disabled={row?.original?.status !== "active" || isPending}
-              onClick={async () => {
-                const loadingToast = toast.loading("Loading...");
-                try {
-                  const res = await mutateAsync(row?.original?._id);
-                  toast.success(`Subscription cancelled successfully`, {
-                    id: loadingToast,
-                  });
-                } catch (error) {
-                  console.log("Subscription cancel error", error);
+            {/* Cancel Button (Existing) */}
+            {row.original.status == "active" && (
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={row?.original?.status !== "active" || isPending}
+                onClick={async () => {
+                  const loadingToast = toast.loading("Loading...");
+                  try {
+                    const res = await mutateAsync(row?.original?._id);
+                    toast.success(`Subscription cancelled successfully`, {
+                      id: loadingToast,
+                    });
+                  } catch (error) {
+                    console.log("Subscription cancel error", error);
 
-                  toast.success(`failed to subscription cancellation`, {
-                    id: loadingToast,
-                  });
-                }
-              }}
-            >
-              Cancel
-            </Button>
-          )}
-        </div>
-      ),
+                    toast.success(`failed to subscription cancellation`, {
+                      id: loadingToast,
+                    });
+                  }
+                }}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        );
+      },
     },
   ];
 

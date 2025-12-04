@@ -25,7 +25,7 @@ type Props = {};
 const STATUS = [
   { value: "", name: "All" },
   { value: "paid", name: "paid" },
-  { value: "not paid", name: "not paid" },
+  { value: "pending", name: "pending" },
 ];
 const InvoiceList = () => {
   const searchParams = useSearchParams();
@@ -208,10 +208,10 @@ const InvoiceList = () => {
             className={`text-[13.5px] ${
               row.getValue("status") === "paid"
                 ? "text-[#28C76F]"
-                : "text-[#898a93]"
+                : "text-[#0682d4]"
             } font-medium`}
           >
-            {row.getValue("status") === "paid" ? "paid" : "not paid"}
+            {row.getValue("status") === "paid" ? "paid" : "pending"}
           </p>
         </div>
       ),

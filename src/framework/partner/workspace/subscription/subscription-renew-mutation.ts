@@ -5,7 +5,9 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
 interface IRenewSubscriptionPayload {
+  start_at: number; // Unix timestamp
   end_at: number; // Unix timestamp
+  payment_status: string;
 }
 
 export function renewPartnerWorkspaceSubscription(
@@ -25,8 +27,8 @@ export const useRenewPartnerWorkspaceSubscriptionMutation = () => {
   const workspace_id = params?.workspace_id as string;
 
   return useMutation({
-    mutationFn: ({ subscription_id, end_at }: { subscription_id: string, end_at: number }) => 
-      renewPartnerWorkspaceSubscription(partner_id, workspace_id, subscription_id, { end_at }),
+    mutationFn: ({ subscription_id, start_at, end_at, payment_status }: { subscription_id: string, start_at: number, end_at: number, payment_status: string }) => 
+      renewPartnerWorkspaceSubscription(partner_id, workspace_id, subscription_id, { start_at, end_at, payment_status }),
     onSuccess: () => {
       toast.success("Subscription renewed successfully");
       queryClient.invalidateQueries({
