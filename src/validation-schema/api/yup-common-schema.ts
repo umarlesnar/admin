@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export const yupFilterQuerySchema = Yup.object().shape({
   q: Yup.string().max(100).default(""),
   page: Yup.number().positive().default(1),
-  per_page: Yup.number().positive().default(20),
+  per_page: Yup.number().positive().default(200),
   sort: Yup.string().default("{}"),
   filter: Yup.string().default("{}"),
 });

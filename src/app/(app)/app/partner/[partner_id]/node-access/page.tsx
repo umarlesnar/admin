@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import http from "@/framework/utils/http";
@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SettingsSideNavBar from "../settings/_components/SettingsSideNavBar";
+import { usePartnerWorkspace } from "@/framework/partner/workspace/get-partner-workspace";
 
 // --- CONSTANTS ---
 // Updated to use single string hint
@@ -130,11 +131,12 @@ export default function NodeAccessPage() {
 
   // 2. Fetch All Workspaces
   const { data: workspaceData } = useQuery({
-    queryKey: ["partner-workspaces", params.partner_id],
+    queryKey: ["partner-workspaces", params.partner_id, isSheetOpen],
     queryFn: async () => {
       const res = await http.get(
-        `/partner/${params.partner_id}/workspace?page=1&limit=100`
+        `/partner/${params.partner_id}/workspace?page=1&per_page=10000`
       );
+
       return res.data;
     },
     enabled: isSheetOpen,
@@ -312,7 +314,10 @@ function NodeConfigurationForm({
   onSave: () => void;
 }) {
   const params = useParams();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const workspace_id = params?.workspace_id as string;
+
   const [selectedWorkspace, setSelectedWorkspace] = useState<any | null>(
     initialWorkspace
   );
@@ -321,6 +326,25 @@ function NodeConfigurationForm({
     bot_flow: [],
     work_flow: [],
   });
+
+  const safeJSONParse = (jsonString: string | null, defaultValue: any) => {
+    try {
+      return jsonString ? JSON.parse(jsonString) : defaultValue;
+    } catch (error) {
+      console.error("JSON parse error:", error);
+      return defaultValue;
+    }
+  };
+
+  const [queryPage, setQueryPage] = useState(() => ({
+    per_page: Number(searchParams.get("per_page") || "20"),
+    page: Number(searchParams.get("page") || "1"),
+    q: searchParams.get("q") || "",
+    filter: safeJSONParse(searchParams.get("filter"), {
+      status: "",
+    }),
+    sort: safeJSONParse(searchParams.get("sort"), { created_at: "-1" }),
+  }));
 
   const initializeNodes = (savedConfig: any) => {
     const merge = (master: any[], saved: any[]) => {
@@ -401,6 +425,13 @@ function NodeConfigurationForm({
     });
   };
 
+  const { data: workspaceData } = usePartnerWorkspace(queryPage);
+  console.log("workspaceData", workspaceData);
+
+  const selectedWorkspaces = workspaceData?.items?.find(
+    (item: any) => item._id === workspace_id
+  );
+
   const handleChangeHint = (
     type: "bot_flow" | "work_flow",
     nodeId: string,
@@ -455,13 +486,40 @@ function NodeConfigurationForm({
           <label className="text-sm font-medium mb-2 block">
             Select Workspace to Configure
           </label>
-          <WorkspaceComboBox
+          {/* <WorkspaceComboBox
             options={allWorkspaces}
             selectedOption={selectedWorkspace}
             onSelectData={(val: any) => setSelectedWorkspace(val)}
             placeholder="Search workspace..."
             buttonClassname="w-full justify-between"
             dropdownClassname="w-[350px]"
+          /> */}
+          <WorkspaceComboBox
+            options={
+              workspaceData?.items.map((item: any) => ({
+                name: item.name,
+                value: item._id,
+              })) || []
+            }
+            img_data={selectedWorkspaces?.workspace_logo_url}
+            workspace_data={selectedWorkspaces?.name}
+            imgUrl={`https://static.kwic.in${selectedWorkspaces?.workspace_logo_url}`}
+            buttonClassname="w-full"
+            dropdownClassname="p-2 w-[100%]"
+            placeholder={selectedWorkspaces?.name || "Select Workspace"}
+            onSelectData={(val: any) => {
+              const workspace = allWorkspaces.find(
+                (ws) => ws._id === val.value
+              );
+              setSelectedWorkspace(workspace);
+            }}
+            onSearch={(searchText: string) =>
+              setQueryPage((prev: any) => ({
+                ...prev,
+                q: searchText,
+                page: 1,
+              }))
+            }
           />
         </div>
       )}
@@ -508,8 +566,13 @@ function NodeConfigurationForm({
                             <label
                               htmlFor={`bot-${node.id}`}
                               className="text-sm font-medium leading-none cursor-pointer text-gray-900"
+                              onClick={() =>
+                                handleToggleNode("bot_flow", node.id)
+                              }
                             >
+                              <div>
                               {node.name}
+                              </div> 
                             </label>
                           </div>
                         </div>
@@ -551,14 +614,19 @@ function NodeConfigurationForm({
                               handleToggleNode("work_flow", node.id)
                             }
                           >
-                            <label
+                          <label
                               htmlFor={`work-${node.id}`}
                               className="text-sm font-medium leading-none cursor-pointer text-gray-900"
+                              onClick={() =>
+                                handleToggleNode("work_flow", node.id)
+                              }
                             >
+                              <div>
                               {node.name}
+                              </div>
                             </label>
                           </div>
-                        </div>
+                        </div>{" "}
                         {node.enabled && (
                           <HintSelector type="work_flow" node={node} />
                         )}
