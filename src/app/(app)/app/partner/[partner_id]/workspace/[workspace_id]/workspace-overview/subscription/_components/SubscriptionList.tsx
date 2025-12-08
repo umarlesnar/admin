@@ -21,7 +21,6 @@ import { toast } from "sonner";
 import { useSubcriptionQuery } from "@/framework/partner/workspace/subscription/get-subscription";
 import { useWorkspaceSubscriptionCancelMutation } from "@/framework/partner/workspace/subscription/subscription-cancel-mutation";
 import { EditIcon } from "@/components/ui/icons/EditIcone";
-import { SwitchIcon } from "@/components/ui/icons/SwitchIcon";
 import EditSubscriptionDateSheet from "./EditDateForm";
 import RenewSubscriptionSheet from "./RenewSubscriptionSheet";
 import UpgradeSubscriptionSheet from "./UpgradeSubscriptionSheet";
@@ -31,6 +30,7 @@ const STATUS = [
   { value: "active", name: "Active" },
   { value: "completed", name: "Completed" },
   { value: "cancelled", name: "Cancelled" },
+  { value: "scheduled", name: "Scheduled" },
 ];
 
 type Props = {};
@@ -284,7 +284,9 @@ export const SubscriptionList = (props: Props) => {
             {/* UPGRADE BUTTON: Only for Active Subscriptions */}
             {!isExpired && row.original.status === 'active' && (
               <UpgradeSubscriptionSheet subscription={row.original}>
-                <SwitchIcon className="w-4 h-4 cursor-pointer text-blue-600 hover:text-blue-700" />
+                <Button size="sm" variant="default">
+                  Upgrade
+                </Button>
               </UpgradeSubscriptionSheet>
             )}
 

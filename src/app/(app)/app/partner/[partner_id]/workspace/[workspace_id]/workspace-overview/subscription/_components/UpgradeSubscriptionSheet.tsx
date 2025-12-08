@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import moment from "moment";
 import { Listbox } from "@/components/ui/listbox";
 import Text from "@/components/ui/text";
-import { SwitchIcon } from "@/components/ui/icons/SwitchIcon";
 import { usePartnerProductQuery } from "@/framework/partner/get-partner-product";
 import { API_ENDPOINTS } from "@/constants/endpoints";
 import http from "@/framework/utils/http";
@@ -168,8 +167,8 @@ export default function UpgradeSubscriptionSheet({
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         {children || (
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <SwitchIcon className="w-3 h-3 mr-1" /> Upgrade
+          <Button variant="default" size="sm">
+             Upgrade
           </Button>
         )}
       </SheetTrigger>

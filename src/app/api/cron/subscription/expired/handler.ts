@@ -43,14 +43,54 @@ router
             { status: "active" }
         );
         
-        // Optional: Trigger "Subscription Started" webhook here if needed
+        const element = { ...sub._doc };
+        const workspace = await workspaceModelSchema.findOne({
+          _id: element?.workspace_id,
+          status: "ACTIVE",
+        });
+
+        if (workspace) {
+          const setting = await settingsModelSchema.findOne({
+            domain: workspace?.domain,
+            setting_key: "kwic",
+          });
+
+          if (setting?.setting_value?.workflow_url) {
+            const plan = await productItemModelSchema.findOne({ _id: element?.plan_id });
+
+            const final_payload = {
+              type: "subscription_started",
+              workspace_name: workspace?.name || "",
+              phone: workspace?.notification?.phone_number || "",
+              email_id: workspace?.notification?.email_id || "",
+              plan_name: plan?.name || "",
+              billing_cycle: plan?.type || "",
+              plan_type: plan?.plan_type || "",
+              amount: plan?.price || 0,
+              tax_percentage: plan?.tax_percentage || 0,
+              tax_amount: plan?.tax || 0,
+              total_amount: plan?.total_price || 0,
+              currency_code: plan?.currency_code || "INR",
+              start_at: element?.r_start_at,
+              end_at: element?.r_end_at,
+              current_end_at: element?.r_current_end_at,
+              current_start_at: element?.r_current_start_at,
+            };
+
+            try {
+                await axios.post(setting.setting_value.workflow_url, final_payload);
+            } catch (err) {
+                console.error("Webhook failed", err);
+            }
+          }
+        }
       }
 
       // PART 2: EXPIRE OLD SUBSCRIPTIONS
       // Find active subscriptions that have expired
       const expiredSubscriptions = await subscriptionSchema
         .find({
-          r_current_end_at: { $lt: startOfToday }, 
+          r_current_end_at: { $lt: nowUnix }, 
           status: { $in: ["active"] }, // Only check active ones
         })
         .sort({ r_current_end_at: -1 });
