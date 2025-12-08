@@ -37,6 +37,7 @@ import SequenceType from "./types/SequenceType";
 import WebViewType from "./types/WebViewType";
 import CustomAttributeType from "./types/CustomAttributeType";
 import TriggerChatbotType from "./types/TriggerChatbotType";
+import SetDelayType from "./types/SetDelayType";
 
 type Props = {};
 
@@ -54,6 +55,8 @@ const nodeColor = (node: any) => {
       return "orange";
     case "askMedia":
       return "orange";
+      case "delay":
+      return "yellow";
     case "choices":
       return "orange";
     case "choicesList":
@@ -152,6 +155,7 @@ const FlowRightSide = (props: Props) => {
       webview: WebViewType,
       custom_attribute: CustomAttributeType,
       trigger_chatbot: TriggerChatbotType,
+      delay: SetDelayType,
     }),
     []
   );

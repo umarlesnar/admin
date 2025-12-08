@@ -34,6 +34,7 @@ import { NotesIcon } from "@/components/ui/icons/NotesIcon";
 import { WebViewIcon } from "@/components/ui/icons/WebViewIcon";
 import { BotIcon } from "@/components/ui/icons/BotIcon";
 import { AttributeIcon } from "@/components/ui/icons/AttributeIcon";
+import { ClockIcon } from "@/components/ui/icons/ClockIcon";
 
 type Props = {};
 
@@ -688,6 +689,23 @@ return result;
               <TransformIcon className="w-6 h-6 text-violet-500" />
               <Text size="xs" className="text-center text-[11px]">
                 Transform
+              </Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() =>
+                setNewNode &&
+                setNewNode("delay", "delay", {
+                  delay: 1,
+                  minutes: 0,
+                  seconds: 1,
+                  node_result_id: "",
+                })
+              }
+            >
+              <ClockIcon className="w-5 h-5 text-violet-500" />
+              <Text size="xs" className="text-center text-[11px]">
+                Delay
               </Text>
             </div>
           </AccordionContent>

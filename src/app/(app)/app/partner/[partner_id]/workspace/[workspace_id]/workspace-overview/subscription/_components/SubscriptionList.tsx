@@ -21,8 +21,10 @@ import { toast } from "sonner";
 import { useSubcriptionQuery } from "@/framework/partner/workspace/subscription/get-subscription";
 import { useWorkspaceSubscriptionCancelMutation } from "@/framework/partner/workspace/subscription/subscription-cancel-mutation";
 import { EditIcon } from "@/components/ui/icons/EditIcone";
+import { SwitchIcon } from "@/components/ui/icons/SwitchIcon";
 import EditSubscriptionDateSheet from "./EditDateForm";
 import RenewSubscriptionSheet from "./RenewSubscriptionSheet";
+import UpgradeSubscriptionSheet from "./UpgradeSubscriptionSheet";
 
 const STATUS = [
   { value: "", name: "All" },
@@ -274,10 +276,17 @@ export const SubscriptionList = (props: Props) => {
         
         return (
           <div className="flex items-center gap-3">
-            {/* Edit Date (Existing) */}
+            {/* Edit Date */}
             <EditSubscriptionDateSheet data={row?.original}>
               <EditIcon className="w-4 h-4 cursor-pointer text-green-600" />
             </EditSubscriptionDateSheet>
+
+            {/* UPGRADE BUTTON: Only for Active Subscriptions */}
+            {!isExpired && row.original.status === 'active' && (
+              <UpgradeSubscriptionSheet subscription={row.original}>
+                <SwitchIcon className="w-4 h-4 cursor-pointer text-blue-600 hover:text-blue-700" />
+              </UpgradeSubscriptionSheet>
+            )}
 
             {/* RENEW BUTTON: Show if expired (unless cancelled) */}
             {row.original.status !== "cancelled" && isExpired && (
@@ -288,7 +297,7 @@ export const SubscriptionList = (props: Props) => {
               </RenewSubscriptionSheet>
             )}
 
-            {/* Cancel Button (Existing) */}
+            {/* Cancel Button */}
             {row.original.status == "active" && (
               <Button
                 size="sm"

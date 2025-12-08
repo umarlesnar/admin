@@ -239,6 +239,7 @@ router
           subscription_id: newSubscription._id,
           policy_id: planExist.policy_id,
           type: planExist.plan_type,
+          nodes_available: planExist.nodes_access,
         }
       );
 

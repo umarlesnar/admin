@@ -70,7 +70,7 @@ router
               plan_name: plan?.name || "",
               billing_cycle: plan?.type || "",
               plan_type: plan?.plan_type || "",
-              amout: plan?.price || 0,
+              amount: plan?.price || 0,
               tax_percentage: plan?.tax_percentage || 0,
               tax_amount: plan?.tax || 0,
               total_amount: plan?.total_price || 0,
