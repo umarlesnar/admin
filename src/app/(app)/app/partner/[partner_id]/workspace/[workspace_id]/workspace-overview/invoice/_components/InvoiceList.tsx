@@ -20,6 +20,8 @@ import { DeleteIcon } from "@/components/ui/icons/DeleteIcon";
 import { Listbox } from "@/components/ui/listbox";
 import { InvoiceIcon } from "@/components/ui/icons/InvoiceIcon";
 import { usePaymentInvoiceQuery } from "@/framework/partner/workspace/invoice/get-payment-invoice";
+import { Button } from "@/components/ui/button";
+import MarkInvoicePaidSheet from "./MarkInvoicePaidSheet";
 
 type Props = {};
 const STATUS = [
@@ -70,7 +72,6 @@ const InvoiceList = () => {
   useEffect(() => {
     const params = new URLSearchParams();
 
-    // Add each queryPage property to search params
     Object.entries(queryPage).forEach(([key, value]) => {
       try {
         if (value !== undefined && value !== null) {
@@ -78,7 +79,6 @@ const InvoiceList = () => {
             (key === "sort" || key === "filter") &&
             typeof value === "object"
           ) {
-            // Safely stringify objects
             const stringValue = JSON.stringify(value);
             if (stringValue !== "{}") {
               params.set(key, stringValue);
@@ -92,7 +92,6 @@ const InvoiceList = () => {
       }
     });
 
-    // Update URL without page reload
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   }, [queryPage, pathname, router]);
 
@@ -233,41 +232,18 @@ const InvoiceList = () => {
       id: "action",
       header: "Actions",
       cell: ({ row }) => {
-        const Agent = row.original;
+        const Invoice = row.original;
 
         return (
-          <div className="flex gap-3 space-x-2">
-            {/* <EditAgentSheet data={Agent}> */}
-            {/* <EditIcon className="w-4 h-4 cursor-pointer text-green-600" /> */}
-            {/* </EditAgentSheet> */}
-            <Alert
-              icon={<AlertIcon className="w-[50px] h-[50px] text-red-500" />}
-              description={`Do you want to remove this ${row.original?.profile?.first_name} ${row.original?.profile?.last_name} Agent ?`}
-              onRightButton={async () => {
-                const loadingToast = toast.loading("Loading...");
-                try {
-                  //   await mutateAsync({
-                  //     method: "DELETE",
-                  //     user_id: Agent._id,
-                  //   });
-                  toast.success(`Agent Deleted Successfully`, {
-                    id: loadingToast,
-                  });
-                } catch (error) {
-                  toast.error(`Failed to Agent delete`, {
-                    id: loadingToast,
-                  });
-                }
-              }}
-              rightButtonProps={{
-                variant: "destructive",
-              }}
-            >
-              <DeleteIcon className="w-4 h-4 cursor-pointer text-red-600" />
-            </Alert>
-            {/* <ChangPasswordSheet data={Agent}>
-            <LockIcon className="w-4 h-4 cursor-pointer text-blue-600"/>
-            </ChangPasswordSheet> */}
+          <div className="flex gap-3 space-x-2 items-center">
+            {Invoice.status === "pending" && (
+                <MarkInvoicePaidSheet invoice={Invoice} refetch={refetch}>
+                    <Button size="sm" variant="outline" className="h-7 text-xs border-green-500 text-green-600 hover:bg-green-50">
+                        Mark Paid
+                    </Button>
+                </MarkInvoicePaidSheet>
+            )}
+
           </div>
         );
       },

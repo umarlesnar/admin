@@ -17,6 +17,7 @@ const router = createEdgeRouter<NextRequest, RequestContext>();
 router
   .use(apiMiddlerware)
   .get(async (req: AppNextApiRequest, { params }: any) => {
+    // ... (Existing GET Logic kept as is) ...
     const query = await getServerSearchParams(req);
     let paymentInvoiceQueryValidation: any = {};
     try {
@@ -39,7 +40,7 @@ router
     try {
       let searchQuery: any = {};
 
-      if (paymentInvoiceQueryValidation.q != "") {
+      if (paymentInvoiceQueryValidation.q !== "") {
         searchQuery = {
           $or: [
             {
@@ -116,6 +117,49 @@ router
       return NextResponse.json({
         status: SERVER_STATUS_CODE.SERVER_ERROR,
         data: null,
+        message: "Server Error",
+      });
+    }
+  })
+  .put(async (req: AppNextApiRequest, { params }: any) => {
+    try {
+      const body = await req.json();
+      const { invoice_id, payment_method, reference_id, paid_at } = body;
+
+      if (!invoice_id || typeof invoice_id !== "string") {
+        return NextResponse.json(
+          { status: SERVER_STATUS_CODE.VALIDATION_ERROR_CODE, message: "Invoice ID is required" },
+          { status: SERVER_STATUS_CODE.VALIDATION_ERROR_CODE }
+        );
+      }
+
+      const updatedInvoice = await paymentInvoiceSchema.findOneAndUpdate(
+        { _id: invoice_id, workspace_id: params.workspace_id },
+        {
+          status: "paid",
+          payment_method,
+          reference_id,
+          paid_at,
+        },
+        { new: true }
+      );
+
+      if (!updatedInvoice) {
+        return NextResponse.json(
+          { status: SERVER_STATUS_CODE.RESOURCE_NOT_FOUND, message: "Invoice not found" },
+          { status: SERVER_STATUS_CODE.RESOURCE_NOT_FOUND }
+        );
+      }
+
+      return NextResponse.json({
+        status: SERVER_STATUS_CODE.SUCCESS_CODE,
+        data: updatedInvoice,
+        message: "Invoice marked as paid successfully",
+      });
+    } catch (error) {
+      console.error("Invoice update error:", error);
+      return NextResponse.json({
+        status: SERVER_STATUS_CODE.SERVER_ERROR,
         message: "Server Error",
       });
     }

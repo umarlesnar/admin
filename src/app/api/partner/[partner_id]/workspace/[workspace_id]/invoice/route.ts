@@ -9,3 +9,10 @@ export async function GET(
 ): Promise<void | Response> {
   return (await nc.run(request, ctx)) as Promise<void | Response>;
 }
+
+export async function PUT(
+  request: NextRequest,
+  ctx: RequestContext
+): Promise<void | Response> {
+  return (await nc.run(request, ctx)) as Promise<void | Response>;
+}

@@ -84,8 +84,6 @@ export const SubscriptionList = (props: Props) => {
             (key === "sort" || key === "filter") &&
             typeof value === "object"
           ) {
-            // Safely stringify objects
-
             const stringValue = JSON.stringify(value);
             if (stringValue !== "{}") {
               params.set(key, stringValue);
@@ -113,16 +111,13 @@ export const SubscriptionList = (props: Props) => {
         total_result: data?.total_result,
         current_page: data?.current_page,
       });
-      setQueryPage((prestate: any) => {
-        return {
-          ...prestate,
-          per_page: data?.per_page,
-          page: data?.current_page,
-          q: queryPage.q,
-        };
-      });
+      setQueryPage((prestate: any) => ({
+        ...prestate,
+        per_page: data?.per_page,
+        page: data?.current_page,
+      }));
     }
-  }, [data]);
+  }, [data, queryPage.q]);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -148,12 +143,12 @@ export const SubscriptionList = (props: Props) => {
             <Text>{row?.original?.payment_gateway}</Text>
             {row?.original?.payment_gateway === "razorpay" && (
               <div className="flex flex-col gap-1.5">
-                  <Text size="xs" textColor="text-blue-500">
-                    {row?.original?.r_subscription_id}
-                  </Text>
-                  <Text size="xs" textColor="text-purple-700">
-                    {row?.original?.r_plan_id}
-                  </Text>
+                <Text size="xs" textColor="text-blue-500">
+                  {row?.original?.r_subscription_id}
+                </Text>
+                <Text size="xs" textColor="text-purple-700">
+                  {row?.original?.r_plan_id}
+                </Text>
               </div>
             )}
           </div>
@@ -270,19 +265,21 @@ export const SubscriptionList = (props: Props) => {
       id: "action",
       header: "Actions",
       cell: ({ row }: any) => {
-        const isExpired = row?.original?.r_current_end_at 
-          ? moment.unix(row.original.r_current_end_at).isBefore(moment()) 
+        const isExpired = row?.original?.r_current_end_at
+          ? moment.unix(row.original.r_current_end_at).isBefore(moment())
           : false;
-        
+
         return (
           <div className="flex items-center gap-3">
-            {/* Edit Date */}
+            {/* Edit Date - Explicit Wrapper to ensure visibility */}
             <EditSubscriptionDateSheet data={row?.original}>
-              <EditIcon className="w-4 h-4 cursor-pointer text-green-600" />
+              <div className="cursor-pointer p-1 rounded-full hover:bg-gray-100">
+                <EditIcon className="w-4 h-4 text-green-600" />
+              </div>
             </EditSubscriptionDateSheet>
 
             {/* UPGRADE BUTTON: Only for Active Subscriptions */}
-            {!isExpired && row.original.status === 'active' && (
+            {!isExpired && row.original.status === "active" && (
               <UpgradeSubscriptionSheet subscription={row.original}>
                 <Button size="sm" variant="default">
                   Upgrade
@@ -293,9 +290,7 @@ export const SubscriptionList = (props: Props) => {
             {/* RENEW BUTTON: Show if expired (unless cancelled) */}
             {row.original.status !== "cancelled" && isExpired && (
               <RenewSubscriptionSheet subscription={row.original}>
-                 <Button size="sm">
-                  Renew
-                 </Button>
+                <Button size="sm">Renew</Button>
               </RenewSubscriptionSheet>
             )}
 
@@ -315,7 +310,7 @@ export const SubscriptionList = (props: Props) => {
                   } catch (error) {
                     console.log("Subscription cancel error", error);
 
-                    toast.success(`failed to subscription cancellation`, {
+                    toast.error(`Failed to cancel subscription`, {
                       id: loadingToast,
                     });
                   }
