@@ -1,3 +1,5 @@
+// src/models/business-account-model-schema.ts
+
 import { Document, Model, Schema, model, models, Types, Mixed } from "mongoose";
 
 interface IBusinessAccount extends Document {
@@ -39,6 +41,7 @@ interface IBusinessAccount extends Document {
   verify_token?: string;
   access_token_expired_in: number;
   workspace_id?: Types.ObjectId;
+  is_on_biz_app?: boolean; 
 }
 
 interface IBusinessAccountMethods {}
@@ -87,6 +90,7 @@ const BusinessAccountSchema = new Schema<
   verify_token: { type: Schema.Types.String },
   access_token_expired_in: { type: Schema.Types.Number },
   workspace_id: { type: Schema.Types.ObjectId },
+  is_on_biz_app: { type: Boolean, default: false }, 
 });
 
 export default models.business_account ||
