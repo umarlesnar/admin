@@ -86,7 +86,6 @@ export default function UpgradeSubscriptionSheet({
         end_at: moment(values.end_at).endOf("day").unix(),
       };
       
-      // FIX: Removed leading '/api' because http client already includes it in baseURL
       const res = await http.post(
         `/partner/${partner_id}/workspace/${workspace_id}/subscription/${subscription._id}/upgrade`,
         payload

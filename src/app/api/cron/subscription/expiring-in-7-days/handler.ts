@@ -81,10 +81,11 @@ router
               current_start_at: element?.r_current_start_at,
             };
 
-            const pushDataToKwic = await axios.post(
-              settings_value?.workflow_url,
-              final_payload
-            );
+            try {
+              await axios.post(settings_value?.workflow_url, final_payload);
+            } catch (err) {
+              console.error("Webhook failed", err);
+            }
           }
         }
       }

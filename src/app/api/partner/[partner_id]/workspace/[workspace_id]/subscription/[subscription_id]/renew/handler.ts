@@ -35,6 +35,19 @@ router
         );
       }
 
+      if (subscription.upcoming_plan) {
+        return NextResponse.json(
+          {
+            status_code: SERVER_STATUS_CODE.VALIDATION_ERROR_CODE,
+            message: "Cannot renew subscription with a scheduled plan",
+            data: null,
+          },
+          {
+            status: SERVER_STATUS_CODE.VALIDATION_ERROR_CODE,
+          }
+        );
+      }
+
       const updatedSubscription = await subscriptionSchema.findOneAndUpdate(
         {
           _id: subscription_id,

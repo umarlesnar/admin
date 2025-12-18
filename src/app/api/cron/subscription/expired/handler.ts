@@ -90,7 +90,7 @@ router
       // Find active subscriptions that have expired
       const expiredSubscriptions = await subscriptionSchema
         .find({
-          r_current_end_at: { $lt: nowUnix }, 
+          r_current_end_at: { $lte: nowUnix }, 
           status: { $in: ["active"] }, // Only check active ones
         })
         .sort({ r_current_end_at: -1 });

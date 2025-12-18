@@ -287,12 +287,14 @@ export const SubscriptionList = (props: Props) => {
               </UpgradeSubscriptionSheet>
             )}
 
-            {/* RENEW BUTTON: Show if expired (unless cancelled) */}
-            {row.original.status !== "cancelled" && isExpired && (
-              <RenewSubscriptionSheet subscription={row.original}>
-                <Button size="sm">Renew</Button>
-              </RenewSubscriptionSheet>
-            )}
+            {/* RENEW BUTTON: Show if expired (unless cancelled or completed) */}
+            {row.original.status !== "cancelled" &&
+              row.original.status !== "completed" &&
+              isExpired && (
+                <RenewSubscriptionSheet subscription={row.original}>
+                  <Button size="sm">Renew</Button>
+                </RenewSubscriptionSheet>
+              )}
 
             {/* Cancel Button */}
             {row.original.status == "active" && (

@@ -38,6 +38,8 @@ import WebViewType from "./types/WebViewType";
 import CustomAttributeType from "./types/CustomAttributeType";
 import TriggerChatbotType from "./types/TriggerChatbotType";
 import SetDelayType from "./types/SetDelayType";
+import GeideaType from "./types/GeideaType";
+import AskLocationType from "./types/AskLocationType";
 
 type Props = {};
 
@@ -53,6 +55,8 @@ const nodeColor = (node: any) => {
       return "orange";
     case "askAddress":
       return "orange";
+    case "askLocation":
+      return "blue";
     case "askMedia":
       return "orange";
       case "delay":
@@ -98,6 +102,8 @@ const nodeColor = (node: any) => {
     case "aiPrompt":
       return "green";
     case "rz_payment_link":
+      return "green";
+    case "geidea_payment_link":
       return "green";
     case "dataTransform":
       return "yellow";
@@ -147,10 +153,12 @@ const FlowRightSide = (props: Props) => {
       openAI: OpenAiType,
       aiPrompt: UserPromptType,
       rz_payment_link: RazorpayType,
+      geidea_payment_link: GeideaType,
       order_details: OrderType,
       dataTransform: TransformType,
       whatsapp_order_status: SendOrderStatusType,
       askAddress: AskAddressType,
+      askLocation: AskLocationType,
       askMedia: AskMediaType,
       webview: WebViewType,
       custom_attribute: CustomAttributeType,

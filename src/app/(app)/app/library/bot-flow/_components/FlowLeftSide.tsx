@@ -35,6 +35,7 @@ import { WebViewIcon } from "@/components/ui/icons/WebViewIcon";
 import { BotIcon } from "@/components/ui/icons/BotIcon";
 import { AttributeIcon } from "@/components/ui/icons/AttributeIcon";
 import { ClockIcon } from "@/components/ui/icons/ClockIcon";
+import { GeideaBrandIcon } from "@/components/ui/icons/GeideaIcon";
 
 type Props = {};
 
@@ -124,6 +125,23 @@ const FlowLeftSide = (props: Props) => {
             >
               <LocationIcon className="w-5 h-5 text-orange-400" />
               <Text>Ask Address</Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() =>
+                setNewNode &&
+                setNewNode("askLocation", "askLocation", {
+                  flow_replies: {
+                    type: "interactive",
+                    data: "",
+                  },
+                  user_input_variable: "@action",
+                  node_result_id: "",
+                })
+              }
+            >
+              <LocationIcon className="w-5 h-5 text-lime-500" />
+              <Text>Ask Location</Text>
             </div>
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
@@ -346,7 +364,7 @@ const FlowLeftSide = (props: Props) => {
               onClick={() => {
                 setNewNode &&
                   setNewNode("custom_attribute", "custom_attribute", {
-                    custom_params:{},
+                    custom_params: {},
                   });
               }}
             >
@@ -600,6 +618,27 @@ const FlowLeftSide = (props: Props) => {
               <RazorPayBrandIcon className="w-6 h-6" />
               <Text size="xs" className="text-center text-[11px]">
                 Razorpay
+              </Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() =>
+                setNewNode &&
+                setNewNode("geidea_payment_link", "geidea", {
+                  type: "standard",
+                  credential_id: "",
+                  amount: "@payment",
+                  currency: "SAR",
+                  payment_notes: "",
+                  node_result_id: "",
+                  callback_url: "",
+                  user_input_variable: "@payment_link",
+                })
+              }
+            >
+              <GeideaBrandIcon className="w-6 h-6" />
+              <Text size="xs" className="text-center text-[11px]">
+                Geidea
               </Text>
             </div>
           </AccordionContent>

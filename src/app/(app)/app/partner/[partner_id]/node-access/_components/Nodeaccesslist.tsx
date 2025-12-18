@@ -55,6 +55,7 @@ const safeJSONParse = (jsonString: string | null, defaultValue: any) => {
 // ... [Existing CONSTANTS and TYPES remain the same] ...
 const BOT_FLOW_NODES_MASTER = [
   { name: "Ask Address", id: "askAddress", hint: "free" },
+  { name: "Ask Location", id: "askLocation", hint: "free" },
   { name: "Ask Media", id: "askMedia", hint: "free" },
   { name: "Campaign Status", id: "update_broadcast_status", hint: "pro" },
   { name: "Buttons", id: "choice_message", hint: "free" },
@@ -64,6 +65,7 @@ const BOT_FLOW_NODES_MASTER = [
   { name: "Catalog", id: "catalog", hint: "pro" },
   { name: "Chat Status", id: "update_chat_status", hint: "free" },
   { name: "Condition", id: "condition", hint: "pro" },
+  { name: "Geidea", id: "geidea", hint: "enterprise" },
   { name: "Google Sheet", id: "googleSheet", hint: "enterprise" },
   { name: "Lists", id: "choice_list", hint: "free" },
   { name: "Send a Message", id: "main_message", hint: "free" },
