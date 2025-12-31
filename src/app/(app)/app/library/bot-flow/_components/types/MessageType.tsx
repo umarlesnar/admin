@@ -34,9 +34,9 @@ const MessageType = ({ data, id }: any) => {
           }}
         />
       )}
-      <div className="w-full h-10 bg-red-100 rounded flex items-center justify-between gap-3 p-2">
+      <div className="w-full h-10 bg-orange-100 rounded flex items-center justify-between gap-3 p-2">
         <div className="flex items-center gap-3">
-          <MessageIcon className="w-[18px] h-[18px] text-red-500" />
+          <MessageIcon className="w-[18px] h-[18px] text-orange-500" />
           <Text size="sm" weight="semibold" textColor="text-primary-900">
             Send a Message
           </Text>

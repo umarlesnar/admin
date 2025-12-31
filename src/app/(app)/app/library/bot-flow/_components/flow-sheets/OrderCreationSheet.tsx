@@ -12,18 +12,16 @@ import { ErrorMessage, Formik } from "formik";
 import React, { ReactElement, useEffect, useState } from "react";
 import useStore from "../store";
 import { Input } from "@/components/ui/input";
-// import { useWhatsappPaymentConfigQuery } from "@/framework/whatsapp/get-payment-configurations";
 import Text from "@/components/ui/text";
 import { Combobox } from "@/components/ui/combobox";
-// import { useEcommerceIntegrationQuery } from "@/framework/whatsapp/get-ecommerce-integration";
 import { Listbox } from "@/components/ui/listbox";
 import { Textarea } from "@/components/ui/textarea";
 import { StrikeThrough } from "@/components/ui/icons/StrikeThroughIcon";
 import CustomTooltip from "@/components/ui/CustomTooltip";
 import VariantButtonDropdown from "../VariantButtonDropdown";
-import { ItalicIcon } from "@/components/ui/icons/ItalicIcon";
-import EmojiPickerNew from "../../../template/_components/EmojiPickerNew";
 import { BoldIcon } from "@/components/ui/icons/BoldIcon";
+import { ItalicIcon } from "@/components/ui/icons/ItalicIcon";
+import EmojiPickerNew from "../EmojiPickerNew";
 
 type Props = {
   children: ReactElement;
@@ -71,21 +69,6 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [options, setOptions] = useState([]);
   const { updateNodeData } = useStore();
-  // const commerce = useEcommerceIntegrationQuery();
-  // const { data, isLoading } = useWhatsappPaymentConfigQuery();
-
-  // useEffect(() => {
-  //   if (data?.length > 0 && data[0]?.payment_configurations) {
-  //     const config = data[0]?.payment_configurations?.map((item: any) => {
-  //       return {
-  //         name: item?.configuration_name,
-  //         ...item,
-  //       };
-  //     });
-
-  //     setOptions(config);
-  //   }
-  // }, [data]);
 
   return (
     <Formik
@@ -102,6 +85,7 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
         expired_in_minutes: 5,
         shopify_credential_id: "",
         shipping_country_code: "IN",
+        expired_description: "Order expired. The expiry time has passed.",
         ...sheetData,
       }}
       onSubmit={(values) => {
@@ -126,7 +110,7 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
             open={open}
             onOpenChange={(value) => {
               setOpen(value);
-              resetForm({});
+              resetForm(sheetData);
             }}
           >
             <SheetTrigger asChild>{children}</SheetTrigger>
@@ -139,7 +123,19 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
                   Order Details Configuration
                 </SheetTitle>
               </SheetHeader>
-
+              <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-md">
+                <Text size="sm" textColor="text-amber-700">
+                  ⚠️ This feature is only available in{" "}
+                  <Text
+                    size="sm"
+                    tag="span"
+                    textColor="text-amber-700"
+                    weight="semibold"
+                  >
+                    India
+                  </Text>
+                </Text>
+              </div>
               {/* form body */}
               <div className="flex flex-1 flex-col px-1 overflow-auto bg-scroll space-y-2">
                 <div className="space-y-2">
@@ -153,12 +149,7 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
                     placeholder="Enter Your Body Text"
                     value={values?.body?.text}
                   />
-
-                  <ErrorMessage
-                    component={"p"}
-                    name="body.text"
-                    className="test-sm font-normal text-red-500"
-                  />
+                  
                   <div className="flex justify-between items-center ">
                     <VariantButtonDropdown
                       onSelect={(variableValue: any) => {
@@ -353,14 +344,14 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
                   <Text size="sm" weight="medium">
                     Commerce Manager
                   </Text>
-                  {/* <Combobox
-                    options={commerce?.data || []}
+                  <Combobox
+                    // options={commerce?.data || []}
                     buttonClassname={`w-full`}
-                    selectedOption={commerce?.data?.find((o: any) => {
-                      return o.name == values?.store_type;
-                    })}
+                    // selectedOption={commerce?.data?.find((o: any) => {
+                    //   return o.name == values?.store_type;
+                    // })}
                     placeholder={
-                      commerce?.isLoading ? "Loading..." : "Select Manager"
+                      "Select Manager"
                     }
                     onSelectData={(selected: any) => {
                       setFieldValue(`store_type`, selected?.name);
@@ -383,7 +374,7 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
                     component={"p"}
                     name="store_type"
                     className="test-sm font-normal text-red-500"
-                  /> */}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Text size="sm" weight="medium">
@@ -398,7 +389,7 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
                         values?.payment_configuration?.configuration_name
                       );
                     })}
-                    // placeholder={isLoading ? "Loading..." : "Select account"}
+                    placeholder={"Select account"}
                     onSelectData={(selected: any) => {
                       setFieldValue(`payment_configuration`, selected);
                     }}
@@ -427,6 +418,23 @@ const OrderCreationSheet = ({ children, sheetData, id }: Props) => {
                   <ErrorMessage
                     component={"p"}
                     name="product_type"
+                    className="test-sm font-normal text-red-500"
+                  />
+                </div>
+                <div className="space-y-2 pb-4">
+                  <Text size="sm" weight="medium">
+                    Expired Description
+                  </Text>
+                  <Textarea
+                    name="expired_description"
+                    placeholder="Expired Description"
+                    value={values.expired_description}
+                    onChange={handleChange}
+                  />
+
+                  <ErrorMessage
+                    component={"p"}
+                    name="expired_description"
                     className="test-sm font-normal text-red-500"
                   />
                 </div>

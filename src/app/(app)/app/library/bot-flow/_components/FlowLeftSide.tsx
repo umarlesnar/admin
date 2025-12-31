@@ -68,8 +68,8 @@ const FlowLeftSide = (props: Props) => {
                 })
               }
             >
-              <MessageIcon className="w-5 h-5 text-red-400" />
-              <Text>Send a message</Text>
+              <MessageIcon className="w-5 h-5 text-orange-400" />
+              <Text size="xs" className="text-center text-[11px]">Send a message</Text>
             </div>
 
             <div
@@ -97,7 +97,7 @@ const FlowLeftSide = (props: Props) => {
               }
             >
               <QuestionIcon className="w-5 h-5 text-orange-400" />
-              <Text>Ask a Question</Text>
+              <Text size="xs" className="text-center text-[11px]">Ask Question</Text>
             </div>
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
@@ -124,25 +124,8 @@ const FlowLeftSide = (props: Props) => {
               }
             >
               <LocationIcon className="w-5 h-5 text-orange-400" />
-              <Text>Ask Address</Text>
-            </div>
-            <div
-              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
-              onClick={() =>
-                setNewNode &&
-                setNewNode("askLocation", "askLocation", {
-                  flow_replies: {
-                    type: "interactive",
-                    data: "",
-                  },
-                  user_input_variable: "@action",
-                  node_result_id: "",
-                })
-              }
-            >
-              <LocationIcon className="w-5 h-5 text-lime-500" />
-              <Text>Ask Location</Text>
-            </div>
+              <Text size="xs" className="text-center text-[11px]">Ask Address</Text>
+            </div>         
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
               onClick={() =>
@@ -183,6 +166,7 @@ const FlowLeftSide = (props: Props) => {
                     data: "",
                     caption: "",
                     mime_type: "",
+                    allow_multiple_images: false,
                   },
                   answer_validation: {
                     type: 2,
@@ -205,7 +189,7 @@ const FlowLeftSide = (props: Props) => {
               }
             >
               <ButtonFlowIcon className="w-5 h-5 text-orange-400" />
-              <Text>Buttons</Text>
+              <Text size="xs" className="text-center text-[11px]">Buttons</Text>
             </div>
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
@@ -236,7 +220,7 @@ const FlowLeftSide = (props: Props) => {
               }
             >
               <ListFlowIcon className="w-5 h-5 text-orange-400" />
-              <Text>Lists</Text>
+              <Text size="xs" className="text-center text-[11px]">Lists</Text>
             </div>
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
@@ -258,6 +242,33 @@ const FlowLeftSide = (props: Props) => {
               <Text size="xs" className="text-center text-[11px]">
                 Webview
               </Text>
+            </div>
+            <div
+              className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
+              onClick={() =>
+                setNewNode &&
+                setNewNode("askLocation", "askLocation", {
+                  flow_replies: {
+                    type: "1",
+                    data: "",
+                    caption: "",
+                    mime_type: "",
+                  },
+                  answer_validation: {
+                    type: 2,
+                    min: "",
+                    max: "",
+                    regex: "",
+                    fallback: "",
+                    failsCount: "",
+                  },
+                  user_input_variable: "@action",
+                  node_result_id: "",
+                })
+              }
+            >
+              <LocationIcon className="w-5 h-5 text-orange-400" />
+              <Text size="xs" className="text-center text-[11px]">Ask Location</Text>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -451,7 +462,7 @@ const FlowLeftSide = (props: Props) => {
                 Products
               </Text>
             </div>
-            <div
+            {/* <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
               onClick={() => {
                 setNewNode &&
@@ -468,7 +479,7 @@ const FlowLeftSide = (props: Props) => {
               <Text size="xs" className="text-center text-[11px]">
                 Send Order Status
               </Text>
-            </div>
+            </div> */}
             <div
               className="w-full border border-border-teritary rounded-md gap-2 p-2 cursor-pointer flex flex-col items-center justify-center"
               onClick={() => {
@@ -487,6 +498,8 @@ const FlowLeftSide = (props: Props) => {
                     shopify_credential_id: "",
                     shipping_country_code: "IN",
                     node_result_id: "",
+                    expired_description:
+                      "Order expired. The expiry time has passed.",
                   });
               }}
             >
@@ -611,6 +624,7 @@ const FlowLeftSide = (props: Props) => {
                   currency: "INR",
                   payment_notes: "",
                   node_result_id: "",
+                  callback_url: "",
                   user_input_variable: "@payent_link",
                 })
               }

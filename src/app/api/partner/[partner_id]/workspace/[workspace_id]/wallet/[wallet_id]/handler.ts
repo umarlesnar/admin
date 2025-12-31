@@ -8,6 +8,7 @@ import { apiMiddlerware } from "@/middleware/apiMiddleware";
 import businessWalletSchema from "@/models/business-wallet-schema";
 import { yupWalletSchema } from "@/validation-schema/api/yup-wallet-schema";
 import transactionModleSchema from "@/models/transaction-modle-schema";
+import moment from "moment";
 
 const router = createEdgeRouter<NextRequest, RequestContext>();
 router
@@ -114,7 +115,7 @@ router
         reference_type: "ADMIN",
         workspace_id: params?.workspace_id,
         business_id: existingWallet.business_id,
-        created_at: Date.now(),
+        created_at: moment().unix(),
       });
 
       return NextResponse.json(

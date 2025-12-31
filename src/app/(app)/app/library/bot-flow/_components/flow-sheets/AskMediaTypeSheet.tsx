@@ -20,8 +20,9 @@ import { StrikeThrough } from "@/components/ui/icons/StrikeThroughIcon";
 import CustomTooltip from "@/components/ui/CustomTooltip";
 import { ItalicIcon } from "@/components/ui/icons/ItalicIcon";
 import { BoldIcon } from "@/components/ui/icons/BoldIcon";
-import EmojiPickerNew from "../../../template/_components/EmojiPickerNew";
 import VariantButtonDropdown from "../VariantButtonDropdown";
+import { Checkbox } from "@/components/ui/Checkbox";
+import EmojiPickerNew from "../EmojiPickerNew";
 
 type Props = {
   children: ReactElement;
@@ -32,6 +33,7 @@ type Props = {
 const AskMediaTypeSheet = ({ children, data, id }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const { updateNodeData } = useStore();
+
   return (
     <Formik
       initialValues={{
@@ -41,6 +43,7 @@ const AskMediaTypeSheet = ({ children, data, id }: Props) => {
           country: "IN",
           caption: "",
           mime_type: "",
+          allow_multiple_images: false,
         },
         user_input_variable: "@Action1",
         answer_validation: {
@@ -52,61 +55,69 @@ const AskMediaTypeSheet = ({ children, data, id }: Props) => {
           fallback: "",
           failsCount: 1,
         },
-
         isAdvanceEnable: false,
         ...data,
       }}
       onSubmit={(values) => {
         if (typeof updateNodeData == "function") {
-          updateNodeData(id, {
-            ...values,
-          });
+          updateNodeData(id, { ...values });
         }
         setOpen(false);
       }}
       enableReinitialize
       validationSchema={uiYupQuestionSchema}
     >
-      {({ values, handleChange, handleSubmit, resetForm, setFieldValue }) => {
-        return (
-          <Sheet
-            open={open}
-            onOpenChange={(value) => {
-              setOpen(value);
-              resetForm(data?.flow_replies);
-            }}
-          >
-            <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent className="w-[390px] sm:w-[500px] h-screen flex flex-col p-5">
-              <SheetHeader className="flex flex-row items-center gap-4">
+      {({ values, handleChange, handleSubmit, resetForm, setFieldValue }) => (
+        <Sheet
+          open={open}
+          onOpenChange={(value) => {
+            setOpen(value);
+            resetForm(data?.flow_replies);
+          }}
+        >
+          <SheetTrigger asChild>{children}</SheetTrigger>
+          <SheetContent className="w-[420px] sm:w-[520px] h-screen flex flex-col p-0">
+            {/* Enhanced Header */}
+            <SheetHeader className="flex flex-row items-center justify-between p-4 border-b border-border-input bg-gray-50/50">
+              <div className="flex items-center gap-3">
                 <SheetClose asChild>
-                  <CloseIcon className="cursor-pointer w-[15px] h-[15px] text-text-primary" />
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <CloseIcon className="w-4 h-4" />
+                  </Button>
                 </SheetClose>
-                <SheetTitle className="h-full text-text-primary text-xl font-semibold">
+                <SheetTitle className="text-xl font-semibold text-text-primary">
                   Ask Media
                 </SheetTitle>
-              </SheetHeader>
+              </div>
+            </SheetHeader>
 
-              {/* form body */}
-              <div className="flex flex-1 flex-col px-1 overflow-auto bg-scroll space-y-4">
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
+            {/* Enhanced Form Body */}
+            <div className="flex-1 overflow-auto p-6 space-y-6">
+              {/* Question Text Section */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Text size="sm" weight="semibold" color="primary">
                     Body
-                    <span className="text-sm text-red-500 ml-[2px]">*</span>
                   </Text>
+                  <span className="text-red-500 text-sm">*</span>
+                </div>
+
+                <div className="space-y-3">
                   <Textarea
                     name="flow_replies.data"
-                    placeholder="What do you think?"
                     onChange={handleChange}
                     value={values?.flow_replies?.data}
+                    placeholder="Enter your question text here..."
                   />
 
                   <ErrorMessage
-                    component={"p"}
+                    component="p"
                     name="flow_replies.data"
-                    className="test-sm font-normal text-red-500"
+                    className="text-sm font-normal text-red-500"
                   />
-                  <div className="flex justify-between items-center ">
+
+                  {/* Enhanced Formatting Toolbar */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
                     <VariantButtonDropdown
                       onSelect={(variableValue: any) => {
                         const currentText = values?.flow_replies?.data || "";
@@ -116,255 +127,261 @@ const AskMediaTypeSheet = ({ children, data, id }: Props) => {
                         );
                       }}
                     />
-                    <div className="flex gap-3 items-center">
-                      <CustomTooltip value={"Emoji"} sideOffset={10}>
-                        <div>
+
+                    <div className="flex items-center gap-2">
+                      <CustomTooltip value="Add Emoji" sideOffset={10}>
+                        <div className="p-2 hover:bg-white rounded-md transition-colors">
                           <EmojiPickerNew
-                            iconClassName={"w-3 h-3"}
+                            iconClassName="w-4 h-4 text-gray-600"
                             onChange={(emoji: string) => {
                               const currentText =
                                 values?.flow_replies.data || "";
                               setFieldValue(
-                                `flow_replies.data`,
+                                "flow_replies.data",
                                 currentText + emoji
                               );
                             }}
                           />
                         </div>
-                      </CustomTooltip>{" "}
-                      <CustomTooltip value={"Bold"} sideOffset={10}>
-                        <div>
-                          <BoldIcon
-                            onClick={() => {
-                              const textarea =
-                                document.querySelector("textarea");
-                              if (!textarea) return;
-
-                              const start = textarea.selectionStart;
-                              const end = textarea.selectionEnd;
-                              const currentText =
-                                values?.flow_replies.data || "";
-                              const selectedText = currentText.substring(
-                                start,
-                                end
-                              );
-
-                              let newText = "";
-                              if (selectedText) {
-                                newText =
-                                  currentText.substring(0, start) +
-                                  `**${selectedText}**` +
-                                  currentText.substring(end);
-                              } else {
-                                newText = currentText + " **";
-                              }
-
-                              setFieldValue(`flow_replies.data`, newText);
-
-                              setTimeout(() => {
-                                textarea.focus();
-                                textarea.setSelectionRange(start + 2, end + 2); // Adjust cursor inside bold text
-                              }, 10);
-                            }}
-                            className="w-3 h-3 text-[#304742] cursor-pointer"
-                          />
-                        </div>
                       </CustomTooltip>
-                      <CustomTooltip value={"Italic"} sideOffset={10}>
-                        <div>
-                          {" "}
-                          <ItalicIcon
-                            onClick={() => {
-                              const textarea =
-                                document.querySelector("textarea");
-                              if (!textarea) return;
 
-                              const start = textarea.selectionStart;
-                              const end = textarea.selectionEnd;
-                              const currentText =
-                                values?.flow_replies.data || "";
-                              const selectedText = currentText.substring(
-                                start,
-                                end
-                              );
+                      <div className="w-px h-6 bg-gray-300" />
 
-                              let newText = "";
-                              if (selectedText) {
-                                newText =
-                                  currentText.substring(0, start) +
-                                  `_${selectedText}_` +
-                                  currentText.substring(end);
-                              } else {
-                                // If no text is selected, add __Italic__
-                                newText = currentText + " __";
-                              }
+                      <CustomTooltip value="Bold" sideOffset={10}>
+                        <button
+                          type="button"
+                          className="p-2 hover:bg-white rounded-md transition-colors"
+                          onClick={() => {
+                            const textarea = document.querySelector("textarea");
+                            if (!textarea) return;
 
-                              setFieldValue(`flow_replies.data`, newText);
+                            const start = textarea.selectionStart;
+                            const end = textarea.selectionEnd;
+                            const currentText = values?.flow_replies.data || "";
+                            const selectedText = currentText.substring(
+                              start,
+                              end
+                            );
 
-                              // Refocus textarea after update
-                              setTimeout(() => {
-                                textarea.focus();
-                                textarea.setSelectionRange(start + 2, end + 2); // Adjust cursor inside italics
-                              }, 10);
-                            }}
-                            className="w-3 h-3 text-[#304742] cursor-pointer"
-                          />
-                        </div>
+                            let newText = "";
+                            if (selectedText) {
+                              newText =
+                                currentText.substring(0, start) +
+                                `**${selectedText}**` +
+                                currentText.substring(end);
+                            } else {
+                              newText = currentText + " **";
+                            }
+
+                            setFieldValue("flow_replies.data", newText);
+                            setTimeout(() => {
+                              textarea.focus();
+                              textarea.setSelectionRange(start + 2, end + 2);
+                            }, 10);
+                          }}
+                        >
+                          <BoldIcon className="w-4 h-4 text-gray-600" />
+                        </button>
                       </CustomTooltip>
-                      <CustomTooltip value={"Strikethrough"} sideOffset={10}>
-                        <div>
-                          <StrikeThrough
-                            onClick={() => {
-                              const textarea =
-                                document.querySelector("textarea");
-                              if (!textarea) return;
 
-                              const start = textarea.selectionStart;
-                              const end = textarea.selectionEnd;
-                              const currentText =
-                                values?.flow_replies.data || "";
-                              const selectedText = currentText.substring(
-                                start,
-                                end
-                              );
+                      <CustomTooltip value="Italic" sideOffset={10}>
+                        <button
+                          type="button"
+                          className="p-2 hover:bg-white rounded-md transition-colors"
+                          onClick={() => {
+                            const textarea = document.querySelector("textarea");
+                            if (!textarea) return;
 
-                              let newText = "";
-                              if (selectedText) {
-                                // Wrap selected text with ~~
-                                newText =
-                                  currentText.substring(0, start) +
-                                  `~${selectedText}~` +
-                                  currentText.substring(end);
-                              } else {
-                                // If no text is selected, add ~~Strikethrough~~
-                                newText = currentText + " ~~";
-                              }
+                            const start = textarea.selectionStart;
+                            const end = textarea.selectionEnd;
+                            const currentText = values?.flow_replies.data || "";
+                            const selectedText = currentText.substring(
+                              start,
+                              end
+                            );
 
-                              setFieldValue(`flow_replies.data`, newText);
+                            let newText = "";
+                            if (selectedText) {
+                              newText =
+                                currentText.substring(0, start) +
+                                `_${selectedText}_` +
+                                currentText.substring(end);
+                            } else {
+                              newText = currentText + " __";
+                            }
 
-                              // Refocus textarea after update
-                              setTimeout(() => {
-                                textarea.focus();
-                                textarea.setSelectionRange(start + 2, end + 2); // Adjust cursor inside strikethrough
-                              }, 10);
-                            }}
-                            className="w-3 h-3 text-[#304742] cursor-pointer"
-                          />
-                        </div>
+                            setFieldValue("flow_replies.data", newText);
+                            setTimeout(() => {
+                              textarea.focus();
+                              textarea.setSelectionRange(start + 2, end + 2);
+                            }, 10);
+                          }}
+                        >
+                          <ItalicIcon className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </CustomTooltip>
+
+                      <CustomTooltip value="Strikethrough" sideOffset={10}>
+                        <button
+                          type="button"
+                          className="p-2 hover:bg-white rounded-md transition-colors"
+                          onClick={() => {
+                            const textarea = document.querySelector("textarea");
+                            if (!textarea) return;
+
+                            const start = textarea.selectionStart;
+                            const end = textarea.selectionEnd;
+                            const currentText = values?.flow_replies.data || "";
+                            const selectedText = currentText.substring(
+                              start,
+                              end
+                            );
+
+                            let newText = "";
+                            if (selectedText) {
+                              newText =
+                                currentText.substring(0, start) +
+                                `~${selectedText}~` +
+                                currentText.substring(end);
+                            } else {
+                              newText = currentText + " ~~";
+                            }
+
+                            setFieldValue("flow_replies.data", newText);
+                            setTimeout(() => {
+                              textarea.focus();
+                              textarea.setSelectionRange(start + 2, end + 2);
+                            }, 10);
+                          }}
+                        >
+                          <StrikeThrough className="w-4 h-4 text-gray-600" />
+                        </button>
                       </CustomTooltip>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Accept file
-                  </Text>
-                  <DropdownTagFilter
-                    label={" Accept file"}
-                    options={[
-                      { name: "PNG", value: "PNG" },
-                      { name: "JPEG", value: "JPEG" },
-                      { name: "MP4", value: "MP4" },
-                      { name: "MP3", value: "MP3" },
-                      { name: "PDF", value: "PDF" },
-                      { name: "DOCX", value: "DOCX" },
-                      { name: "XLSX", value: "XLSX" },
-                    ]}
-                    onSelectData={(array: any) => {
-                      setFieldValue(
-                        "answer_validation.accept_file_type",
-                        array
-                      );
-                    }}
-                    dropdownClassname={`w-[400px]`}
-                    selectedOptions={
-                      values?.answer_validation?.accept_file_type || []
-                    }
+              {/* File Types Section */}
+              <div className="space-y-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                <Text size="sm" weight="semibold" color="primary">
+                  Accept File Types
+                </Text>
+                <DropdownTagFilter
+                  label="Accept file"
+                  options={[
+                    { name: "PNG", value: "PNG" },
+                    { name: "JPEG", value: "JPEG" },
+                    { name: "MP4", value: "MP4" },
+                    { name: "MP3", value: "MP3" },
+                    { name: "PDF", value: "PDF" },
+                    { name: "DOCX", value: "DOCX" },
+                    { name: "XLSX", value: "XLSX" },
+                  ]}
+                  onSelectData={(array: any) => {
+                    setFieldValue("answer_validation.accept_file_type", array);
+                  }}
+                  dropdownClassname="w-[400px]"
+                  selectedOptions={
+                    values?.answer_validation?.accept_file_type || []
+                  }
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-text-primary border-orange-200 bg-white"
                   >
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-text-primary"
-                    >
-                      {values?.answer_validation?.accept_file_type?.length > 0
-                        ? values?.answer_validation?.accept_file_type?.join(
-                            " , "
-                          )
-                        : "Select Accept file types"}
-                    </Button>
-                  </DropdownTagFilter>
-                  <ErrorMessage
-                    component={"p"}
-                    name="flow_replies.data"
-                    className="test-sm font-normal text-red-500"
-                  />
-                </div>
+                    {values?.answer_validation?.accept_file_type?.length > 0
+                      ? values?.answer_validation?.accept_file_type?.join(", ")
+                      : "Select Accept file types"}
+                  </Button>
+                </DropdownTagFilter>
+              </div>
 
+              {/* Settings Grid */}
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Attempt
+                  <Text size="sm" weight="medium" color="primary">
+                    Maximum Attempts
                   </Text>
                   <Input
                     name="answer_validation.failsCount"
                     type="number"
                     value={values?.answer_validation?.failsCount}
-                    placeholder={"Attempts"}
+                    placeholder="3"
                     onChange={handleChange}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Text size="sm" weight="medium">
+                  <Text size="sm" weight="medium" color="primary">
                     Validation Error Message
                   </Text>
                   <Textarea
                     name="answer_validation.fallback"
                     onChange={handleChange}
                     value={values?.answer_validation?.fallback}
-                    placeholder="Enter your error message..."
-                  />
-
-                  <ErrorMessage
-                    component={"p"}
-                    name="answer_validation.fallback"
-                    className="test-sm font-normal text-red-500"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Save Media URL in a variable
-                  </Text>
-                  <Input
-                    name="user_input_variable"
-                    value={values?.user_input_variable}
-                    placeholder={"@value"}
-                    onChange={handleChange}
+                    placeholder="Please upload a valid file type."
+                    className="min-h-[80px]"
                   />
                 </div>
               </div>
 
-              <div className="w-full flex items-center gap-2 ">
-                <SheetClose asChild>
-                  <Button type="submit" variant="outline" className="w-full">
-                    Cancel
-                  </Button>
-                </SheetClose>
-
-                <Button
-                  type="submit"
-                  className="w-full"
-                  onClick={() => {
-                    handleSubmit();
+              {/* Multiple Images Option */}
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border">
+                <Checkbox
+                  id="allow_multiple_images"
+                  checked={values.flow_replies.allow_multiple_images}
+                  onCheckedChange={(value) => {
+                    setFieldValue("flow_replies.allow_multiple_images", value);
                   }}
+                />
+                <Text
+                  size="sm"
+                  tag="label"
+                  weight="medium"
+                  className="cursor-pointer"
+                  htmlFor="allow_multiple_images"
                 >
-                  Save
-                </Button>
+                  Allow Multiple Images
+                </Text>
               </div>
-            </SheetContent>
-          </Sheet>
-        );
-      }}
+
+              {/* Variable Section */}
+              <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <Text size="sm" weight="semibold" color="primary">
+                  Save Media URL Variable
+                </Text>
+                <Input
+                  name="user_input_variable"
+                  value={values?.user_input_variable}
+                  placeholder="@media_url"
+                  onChange={handleChange}
+                  className="border-blue-200 bg-white"
+                />
+                <Text size="xs" color="secondary">
+                  This variable will store the uploaded media URL
+                </Text>
+              </div>
+            </div>
+
+            {/* Enhanced Footer */}
+            <div className="flex items-center gap-3 p-6 border-t border-border-input bg-gray-50/50">
+              <SheetClose asChild>
+                <Button type="button" variant="outline" className="flex-1">
+                  Cancel
+                </Button>
+              </SheetClose>
+              <Button
+                type="submit"
+                className="flex-1"
+                onClick={() => handleSubmit()}
+              >
+                Save Configuration
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
     </Formik>
   );
 };

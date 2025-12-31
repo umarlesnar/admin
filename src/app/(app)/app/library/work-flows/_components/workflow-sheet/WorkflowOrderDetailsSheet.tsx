@@ -64,21 +64,6 @@ const WorkflowOrderDetailsSheet = ({ children, sheetData, id }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [options, setOptions] = useState([]);
   const { updateNodeData } = useWorkflowStore();
-  // const commerce = useEcommerceIntegrationQuery(;
-  // const { data, isLoading } = useWhatsappPaymentConfigQuery();)
-
-  // useEffect(() => {
-  //   if (data?.length > 0 && data[0]?.payment_configurations) {
-  //     const config = data[0]?.payment_configurations?.map((item: any) => {
-  //       return {
-  //         name: item?.configuration_name,
-  //         ...item,
-  //       };
-  //     });
-
-  //     setOptions(config);
-  //   }
-  // }, [data]);
 
   return (
     <Formik
@@ -90,6 +75,7 @@ const WorkflowOrderDetailsSheet = ({ children, sheetData, id }: Props) => {
           text: "",
         },
         product_type: "",
+        wa_id: "",
         store_type: "",
         payment_configuration: "",
         expired_in_minutes: 0,
@@ -135,6 +121,15 @@ const WorkflowOrderDetailsSheet = ({ children, sheetData, id }: Props) => {
 
               {/* form body */}
               <div className="flex flex-1 flex-col px-1 overflow-auto bg-scroll space-y-2">
+                <Input
+                  name="wa_id"
+                  label="Phone Number"
+                  onChange={handleChange}
+                  value={values?.wa_id}
+                  placeholder="Enter Phone Number"
+                  errorKey={errors && errors.wa_id}
+                  isRequired
+                />
                 <div className="space-y-2">
                   <Text size="sm" weight="medium">
                     Body
@@ -215,8 +210,7 @@ const WorkflowOrderDetailsSheet = ({ children, sheetData, id }: Props) => {
                     //   return o.name == values?.store_type;
                     // })}
                     placeholder={
-                    "Select Manager"
-                      // commerce?.isLoading ? "Loading..." : "Select Manager"
+                       "Select Manager"
                     }
                     onSelectData={(selected: any) => {
                       setFieldValue(`store_type`, selected?.name);
@@ -256,8 +250,7 @@ const WorkflowOrderDetailsSheet = ({ children, sheetData, id }: Props) => {
                         values?.payment_configuration?.configuration_name
                       );
                     })}
-                    placeholde={"Select account"}
-                    // placeholder={isLoading ? "Loading..." : "Select account"}
+                    placeholder={"Select account"}
                     onSelectData={(selected: any) => {
                       setFieldValue(`payment_configuration`, selected);
                     }}

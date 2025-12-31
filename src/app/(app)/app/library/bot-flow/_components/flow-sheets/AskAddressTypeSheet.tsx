@@ -92,6 +92,19 @@ const AskAddressTypeSheet = ({ children, data, id }: Props) => {
                   Ask Address
                 </SheetTitle>
               </SheetHeader>
+              <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-md">
+                <Text size="sm" textColor="text-amber-700">
+                  ⚠️ This feature is only available in{" "}
+                  <Text
+                    size="sm"
+                    tag="span"
+                    textColor="text-amber-700"
+                    weight="semibold"
+                  >
+                    India
+                  </Text>
+                </Text>
+              </div>
 
               {/* form body */}
               <div className="flex flex-1 flex-col px-1 overflow-auto bg-scroll space-y-4">
@@ -109,7 +122,7 @@ const AskAddressTypeSheet = ({ children, data, id }: Props) => {
                   <ErrorMessage
                     component={"p"}
                     name="flow_replies.data"
-                    className="test-sm font-normal text-red-500"
+                    className="text-sm font-normal text-red-500"
                   />
                   <div className="flex justify-between items-center ">
                     <VariantButtonDropdown

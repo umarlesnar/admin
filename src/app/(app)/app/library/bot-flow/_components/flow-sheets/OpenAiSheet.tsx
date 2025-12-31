@@ -25,6 +25,8 @@ import { Listbox } from "@/components/ui/listbox";
 import { LeftArrowSearchIcon } from "@/components/ui/icons/LeftArrowSearchIcon";
 import { DeleteIcon } from "@/components/ui/icons/DeleteIcon";
 import { EditIcon } from "@/components/ui/icons/EditIcon";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { chatgptModels } from "@/lib/utils/common";
 
 type Props = {
   children: ReactElement;
@@ -60,6 +62,8 @@ const OpenAiSheet = ({ children, data, id }: Props) => {
   return (
     <Formik
       initialValues={{
+        user_input_variable: "@USER_MESSAGE_INPUT",
+        enable_chat_history: false,
         configuration: {
           api_key: "",
           model: "",
@@ -129,6 +133,36 @@ const OpenAiSheet = ({ children, data, id }: Props) => {
                 {/* Configuration and Messages Accordion remain the same */}
                 {/* ... previous code for Configuration Accordion ... */}
 
+                <div className="space-y-3 pb-2">
+                  <Input
+                    label="User Input Varibale"
+                    name="user_input_variable"
+                    placeholder="Enter user variable"
+                    onChange={handleChange}
+                    value={values?.user_input_variable}
+                    errorKey={errors && errors.user_input_variable}
+                    isRequired
+                  />
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="enable_chat_history"
+                      onCheckedChange={(value) => {
+                        setFieldValue("enable_chat_history", value);
+                      }}
+                      checked={values?.enable_chat_history}
+                    />
+                    <Text
+                      tag="label"
+                      weight="medium"
+                      className="cursor-pointer"
+                      htmlFor="enable_chat_history"
+                    >
+                      Enable chat history
+                    </Text>
+                  </div>
+                </div>
+
                 <Accordion
                   type="single"
                   collapsible
@@ -149,15 +183,25 @@ const OpenAiSheet = ({ children, data, id }: Props) => {
                         value={values?.configuration?.api_key}
                         errorKey={errors?.configuration?.api_key}
                       />
-                      <Input
-                        label="Model"
-                        type="text"
-                        name={"configuration.model"}
-                        placeholder="Model"
-                        onChange={handleChange}
-                        value={values?.configuration?.model}
-                        errorKey={errors?.configuration?.model}
-                      />
+
+                      <div className="w-full space-y-1">
+                        <Text tag="label" weight="medium">
+                          Model
+                        </Text>
+                        <Listbox
+                          options={chatgptModels}
+                          buttonClassname={`w-full`}
+                          selectedOption={chatgptModels.find((o) => {
+                            return o.value == values?.configuration?.model;
+                          })}
+                          onSelectData={(data: {
+                            name: string;
+                            value: string;
+                          }) => {
+                            setFieldValue("configuration.model", data.value);
+                          }}
+                        />
+                      </div>
                       <Input
                         label="Max Tokens"
                         type="number"

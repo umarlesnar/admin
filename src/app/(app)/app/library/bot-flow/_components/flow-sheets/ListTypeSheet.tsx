@@ -11,17 +11,19 @@ import {
 import Text from "@/components/ui/text";
 import { Textarea } from "@/components/ui/textarea";
 import { ErrorMessage, FieldArray, Formik } from "formik";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import useStore from "../store";
 import { Input } from "@/components/ui/input";
 import { DeleteIcon } from "@/components/ui/icons/DeleteIcon";
 import { uiYupListButtonSchema } from "@/validation-schema/ui/UiYupListButtonSchema";
-import VariantButtonDropdown from "../VariantButtonDropdown";
 import CustomTooltip from "@/components/ui/CustomTooltip";
-import EmojiPickerNew from "../../../template/_components/EmojiPickerNew";
-import { BoldIcon } from "@/components/ui/icons/BoldIcon";
-import { ItalicIcon } from "@/components/ui/icons/ItalicIcon";
 import { StrikeThrough } from "@/components/ui/icons/StrikeThroughIcon";
+import { ItalicIcon } from "@/components/ui/icons/ItalicIcon";
+import { BoldIcon } from "@/components/ui/icons/BoldIcon";
+import VariantButtonDropdown from "../VariantButtonDropdown";
+import { Switch } from "@/components/ui/switch";
+import { PlusIcon } from "@/components/ui/icons/PlusIcon";
+import EmojiPickerNew from "../EmojiPickerNew";
 
 type Props = {
   children: ReactElement;
@@ -32,6 +34,19 @@ type Props = {
 const ListTypeSheet = ({ children, data, id }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const { updateNodeData } = useStore();
+
+  const handleAdvanceToggle = useCallback(
+    (value: boolean, setFieldValue: (field: string, value: any) => void) => {
+      setFieldValue("isAdvanceEnable", value);
+      setFieldValue("answer_validation", {
+        fallback: "",
+        failsCount: "1",
+        validation_error_message: "",
+      });
+    },
+    []
+  );
+
   return (
     <Formik
       initialValues={{
@@ -53,7 +68,13 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
             ],
           },
         ],
-        user_input_variable: "@action",
+        isAdvanceEnable: false,
+        answer_validation: {
+          fallback: "",
+          validation_error_message: "",
+          failsCount: "",
+        },
+        user_input_variable: "@user_response",
         ...data,
       }}
       onSubmit={(values) => {
@@ -74,7 +95,7 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
         handleChange,
         handleSubmit,
         resetForm,
-      }) => {
+      }: any) => {
         return (
           <Sheet
             open={open}
@@ -84,22 +105,28 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
             }}
           >
             <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent className="w-[390px] sm:w-[500px] h-screen flex flex-col p-5">
-              <SheetHeader className="flex flex-row items-center gap-4">
-                <SheetClose asChild>
-                  <CloseIcon className="cursor-pointer w-[15px] h-[15px] text-text-primary" />
-                </SheetClose>
-                <SheetTitle className="h-full text-text-primary text-xl font-semibold">
-                  Set List
-                </SheetTitle>
+            <SheetContent className="w-[420px] sm:w-[520px] h-screen flex flex-col p-0">
+              {/* Enhanced Header */}
+              <SheetHeader className="flex flex-row items-center justify-between p-4 border-b border-border-input bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                  <SheetClose asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <CloseIcon className="w-4 h-4" />
+                    </Button>
+                  </SheetClose>
+                  <SheetTitle className="text-xl font-semibold text-text-primary">
+                    Configure List
+                  </SheetTitle>
+                </div>
               </SheetHeader>
 
-              {/* form body */}
-              <div className="flex flex-1 flex-col px-1 overflow-auto bg-scroll space-y-4">
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
+              {/* Enhanced Form Body */}
+              <div className="flex-1 overflow-auto p-6 space-y-6">
+                {/* Header Text Section */}
+                <div className="space-y-3">
+                  <Text size="sm" weight="semibold" color="primary">
                     Header Text
-                    <span className="text-xs text-text-secondary ml-[2px]">
+                    <span className="text-xs text-text-secondary ml-1 font-normal">
                       (optional, max 60 chars)
                     </span>
                   </Text>
@@ -111,51 +138,65 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
                     errorKey={errors?.interactiveListHeader}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Body Text
-                    <span className="text-sm text-red-500 ml-[2px]">*</span>
-                  </Text>
-                  <Textarea
-                    name="interactiveListBody"
-                    onChange={handleChange}
-                    value={values?.interactiveListBody}
-                  />
 
-                  <ErrorMessage
-                    component={"p"}
-                    name="interactiveListBody"
-                    className="test-sm font-normal text-red-500"
-                  />
-                  <div className="flex justify-between items-center ">
-                    <VariantButtonDropdown
-                      onSelect={(variableValue: any) => {
-                        const currentText = values?.interactiveListBody || "";
-                        setFieldValue(
-                          "interactiveListBody",
-                          currentText + variableValue
-                        );
-                      }}
+                {/* Body Text Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Text size="sm" weight="semibold" color="primary">
+                      Body Text
+                    </Text>
+                    <span className="text-red-500 text-sm">*</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Textarea
+                      name="interactiveListBody"
+                      onChange={handleChange}
+                      value={values?.interactiveListBody}
+                      placeholder="Enter your message text here..."
                     />
-                    <div className="flex gap-3 items-center">
-                      <CustomTooltip value={"Emoji"} sideOffset={10}>
-                        <div>
-                          <EmojiPickerNew
-                            iconClassName={"w-3 h-3"}
-                            onChange={(emoji: string) => {
-                              const currentText =
-                                values?.interactiveListBody || "";
-                              setFieldValue(
-                                `interactiveListBody`,
-                                currentText + emoji
-                              );
-                            }}
-                          />
-                        </div>
-                      </CustomTooltip>{" "}
-                      <CustomTooltip value={"Bold"} sideOffset={10}>
-                        <div>
-                          <BoldIcon
+
+                    <ErrorMessage
+                      component="p"
+                      name="interactiveListBody"
+                      className="text-sm font-normal text-red-500"
+                    />
+
+                    {/* Enhanced Formatting Toolbar */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                      <VariantButtonDropdown
+                        onSelect={(variableValue: any) => {
+                          const currentText = values?.interactiveListBody || "";
+                          setFieldValue(
+                            "interactiveListBody",
+                            currentText + variableValue
+                          );
+                        }}
+                      />
+
+                      <div className="flex items-center gap-2">
+                        <CustomTooltip value="Add Emoji" sideOffset={10}>
+                          <div className="p-2 hover:bg-white rounded-md transition-colors">
+                            <EmojiPickerNew
+                              iconClassName="w-4 h-4 text-gray-600"
+                              onChange={(emoji: string) => {
+                                const currentText =
+                                  values?.interactiveListBody || "";
+                                setFieldValue(
+                                  "interactiveListBody",
+                                  currentText + emoji
+                                );
+                              }}
+                            />
+                          </div>
+                        </CustomTooltip>
+
+                        <div className="w-px h-6 bg-gray-300" />
+
+                        <CustomTooltip value="Bold" sideOffset={10}>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-white rounded-md transition-colors"
                             onClick={() => {
                               const textarea =
                                 document.querySelector("textarea");
@@ -180,21 +221,22 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
                                 newText = currentText + " **";
                               }
 
-                              setFieldValue(`interactiveListBody`, newText);
+                              setFieldValue("interactiveListBody", newText);
 
                               setTimeout(() => {
                                 textarea.focus();
-                                textarea.setSelectionRange(start + 2, end + 2); // Adjust cursor inside bold text
+                                textarea.setSelectionRange(start + 2, end + 2);
                               }, 10);
                             }}
-                            className="w-3 h-3 text-[#304742] cursor-pointer"
-                          />
-                        </div>
-                      </CustomTooltip>
-                      <CustomTooltip value={"Italic"} sideOffset={10}>
-                        <div>
-                          {" "}
-                          <ItalicIcon
+                          >
+                            <BoldIcon className="w-4 h-4 text-gray-600" />
+                          </button>
+                        </CustomTooltip>
+
+                        <CustomTooltip value="Italic" sideOffset={10}>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-white rounded-md transition-colors"
                             onClick={() => {
                               const textarea =
                                 document.querySelector("textarea");
@@ -216,25 +258,25 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
                                   `_${selectedText}_` +
                                   currentText.substring(end);
                               } else {
-                                // If no text is selected, add __Italic__
                                 newText = currentText + " __";
                               }
 
-                              setFieldValue(`interactiveListBody`, newText);
+                              setFieldValue("interactiveListBody", newText);
 
-                              // Refocus textarea after update
                               setTimeout(() => {
                                 textarea.focus();
-                                textarea.setSelectionRange(start + 2, end + 2); // Adjust cursor inside italics
+                                textarea.setSelectionRange(start + 2, end + 2);
                               }, 10);
                             }}
-                            className="w-3 h-3 text-[#304742] cursor-pointer"
-                          />
-                        </div>
-                      </CustomTooltip>
-                      <CustomTooltip value={"Strikethrough"} sideOffset={10}>
-                        <div>
-                          <StrikeThrough
+                          >
+                            <ItalicIcon className="w-4 h-4 text-gray-600" />
+                          </button>
+                        </CustomTooltip>
+
+                        <CustomTooltip value="Strikethrough" sideOffset={10}>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-white rounded-md transition-colors"
                             onClick={() => {
                               const textarea =
                                 document.querySelector("textarea");
@@ -251,288 +293,420 @@ const ListTypeSheet = ({ children, data, id }: Props) => {
 
                               let newText = "";
                               if (selectedText) {
-                                // Wrap selected text with ~~
                                 newText =
                                   currentText.substring(0, start) +
                                   `~${selectedText}~` +
                                   currentText.substring(end);
                               } else {
-                                // If no text is selected, add ~~Strikethrough~~
                                 newText = currentText + " ~~";
                               }
 
-                              setFieldValue(`interactiveListBody`, newText);
+                              setFieldValue("interactiveListBody", newText);
 
-                              // Refocus textarea after update
                               setTimeout(() => {
                                 textarea.focus();
-                                textarea.setSelectionRange(start + 2, end + 2); // Adjust cursor inside strikethrough
+                                textarea.setSelectionRange(start + 2, end + 2);
                               }, 10);
                             }}
-                            className="w-3 h-3 text-[#304742] cursor-pointer"
-                          />
-                        </div>
-                      </CustomTooltip>
+                          >
+                            <StrikeThrough className="w-4 h-4 text-gray-600" />
+                          </button>
+                        </CustomTooltip>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Footer
-                    <span className="text-xs text-text-secondary ml-[2px]">
-                      (optional, max 60 chars)
-                    </span>
-                  </Text>
-                  <Input
-                    name="interactiveListFooter"
-                    onChange={handleChange}
-                    placeholder="Enter the foot text"
-                    value={values?.interactiveListFooter}
-                    errorKey={errors?.interactiveListFooter}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Button name
-                    <span className="text-sm text-red-500 ml-[2px]">*</span>
-                  </Text>
-                  <Input
-                    name="interactiveListButton"
-                    onChange={handleChange}
-                    placeholder="Enter button name"
-                    value={values?.interactiveListButton}
-                    errorKey={errors?.interactiveListButton}
-                  />
+                {/* Footer and Button Sections */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-3">
+                    <Text size="sm" weight="semibold" color="primary">
+                      Footer
+                      <span className="text-xs text-text-secondary ml-1 font-normal">
+                        (optional, max 60 chars)
+                      </span>
+                    </Text>
+                    <Input
+                      name="interactiveListFooter"
+                      onChange={handleChange}
+                      placeholder="Enter the footer text"
+                      value={values?.interactiveListFooter}
+                      errorKey={errors?.interactiveListFooter}
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Text size="sm" weight="semibold" color="primary">
+                        Button Name
+                      </Text>
+                      <span className="text-red-500 text-sm">*</span>
+                    </div>
+                    <Input
+                      name="interactiveListButton"
+                      onChange={handleChange}
+                      placeholder="Enter button name"
+                      value={values?.interactiveListButton}
+                      errorKey={errors?.interactiveListButton}
+                    />
+                  </div>
                 </div>
 
+                {/* Enhanced List Sections */}
                 <FieldArray name="interactiveListSections">
                   {({ insert, remove, push }: any) => (
-                    <div>
-                      {values.interactiveListSections.length > 0 &&
-                        values.interactiveListSections.map(
-                          (value: any, index: any) => (
-                            <div
-                              className=" w-full h-auto rounded bg-gray-100 px-3 py-2 mb-4"
-                              key={index}
-                            >
-                              <h4 className="text-sm font-medium text-base-primary">
-                                {`section_${index + 1}`}{" "}
-                                <span className="text-[10px] font-normal">
-                                  {" (optional, max 24 chars)"}
-                                </span>
-                              </h4>
-                              <div className="w-full py-4 border-b border-gray-200">
-                                <Input
-                                  name={`interactiveListSections.${index}.title`}
-                                  type="text"
-                                  placeholder={`section_${index + 1}`}
-                                  value={value.title}
-                                  onChange={handleChange}
-                                />
-                                <ErrorMessage
-                                  name={`interactiveListSections.${index}.title`}
-                                  component="div"
-                                  className="text-xs text-red-500 pt-1"
-                                />
-                              </div>
-                              <div className="w-full py-3">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Text size="sm" weight="semibold" color="primary">
+                            List Sections
+                          </Text>
+                          <Text size="xs" color="secondary" className="mt-1">
+                            Configure your interactive list sections
+                          </Text>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        {values.interactiveListSections.length > 0 &&
+                          values.interactiveListSections.map(
+                            (value: any, index: any) => (
+                              <div
+                                key={index}
+                                className="p-4 bg-gray-50 rounded-lg border space-y-4"
+                              >
+                                {/* Section Header */}
+                                <div className="flex items-center justify-between">
+                                  <Text
+                                    size="sm"
+                                    weight="medium"
+                                    color="primary"
+                                  >
+                                    Section {index + 1}
+                                    <span className="text-xs font-normal text-text-secondary ml-1">
+                                      (optional, max 24 chars)
+                                    </span>
+                                  </Text>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                                    onClick={() => remove(index)}
+                                  >
+                                    Delete Section
+                                  </Button>
+                                </div>
+
+                                {/* Section Title Input */}
+                                <div className="space-y-2">
+                                  <Input
+                                    name={`interactiveListSections.${index}.title`}
+                                    type="text"
+                                    placeholder={`Section ${index + 1} title`}
+                                    value={value.title}
+                                    onChange={handleChange}
+                                    className="border-white bg-white"
+                                  />
+                                  <ErrorMessage
+                                    name={`interactiveListSections.${index}.title`}
+                                    component="div"
+                                    className="text-xs text-red-500"
+                                  />
+                                </div>
+
+                                {/* Section Rows */}
                                 <FieldArray
                                   name={`interactiveListSections[${index}].rows`}
                                 >
                                   {({ insert, remove, push }: any) => (
-                                    <div>
+                                    <div className="space-y-3">
+                                      <div className="flex items-center justify-between">
+                                        <Text
+                                          size="sm"
+                                          weight="medium"
+                                          color="primary"
+                                        >
+                                          Rows
+                                        </Text>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            push({
+                                              id: Math.random()
+                                                .toString(20)
+                                                .slice(2),
+                                              title: "",
+                                              description: "",
+                                              descriptionEnable: false,
+                                              node_result_id: "",
+                                            });
+                                          }}
+                                          leftIcon={
+                                            <PlusIcon className="w-3 h-3" />
+                                          }
+                                        >
+                                          Add Row
+                                        </Button>
+                                      </div>
+
                                       {values.interactiveListSections[index]
                                         .rows.length > 0 &&
                                         values.interactiveListSections[
                                           index
                                         ].rows.map((row: any, idx: number) => (
                                           <div
-                                            className=" w-full h-auto rounded bg-gray-100 px-3 py-2 mb-4 "
-                                            key={"row" + idx}
+                                            key={idx}
+                                            className="p-3 bg-white rounded-lg border space-y-3"
                                           >
-                                            <div className="border-b border-gray-300 pb-2">
-                                              <div className="my-2">
-                                                <div className="flex items-center justify-between my-2">
-                                                  <p className="text-sm font-medium text-text-primary">
-                                                    {`Row ${idx + 1}`}{" "}
-                                                    <span className="text-[10px] font-normal">
-                                                      {" (max 24 chars)"}
+                                            {/* Row Header */}
+                                            <div className="flex items-center justify-between">
+                                              <Text
+                                                size="sm"
+                                                weight="medium"
+                                                color="primary"
+                                              >
+                                                Row {idx + 1}
+                                                <span className="text-xs font-normal text-text-secondary ml-1">
+                                                  (max 24 chars)
+                                                </span>
+                                              </Text>
+                                              <div className="flex items-center gap-2">
+                                                <button
+                                                  type="button"
+                                                  className="text-xs text-blue-500 underline"
+                                                  onClick={() => {
+                                                    setFieldValue(
+                                                      `interactiveListSections.${index}.rows.${idx}.descriptionEnable`,
+                                                      true
+                                                    );
+                                                  }}
+                                                >
+                                                  Add Description
+                                                </button>
+                                                <Button
+                                                  type="button"
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                                  onClick={() => remove(idx)}
+                                                >
+                                                  <DeleteIcon className="w-4 h-4" />
+                                                </Button>
+                                              </div>
+                                            </div>
+
+                                            {/* Row Title */}
+                                            <div className="space-y-2">
+                                              <Input
+                                                name={`interactiveListSections.${index}.rows.${idx}.title`}
+                                                placeholder={`Row ${idx + 1} title`}
+                                                onChange={handleChange}
+                                                value={row.title}
+                                                className="border-gray-200"
+                                              />
+                                              <ErrorMessage
+                                                name={`interactiveListSections.${index}.rows.${idx}.title`}
+                                                component="div"
+                                                className="text-xs text-red-500"
+                                              />
+                                            </div>
+
+                                            {/* Row Description */}
+                                            {values.interactiveListSections[
+                                              index
+                                            ].rows[idx].descriptionEnable && (
+                                              <div className="space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                  <Text
+                                                    size="xs"
+                                                    weight="medium"
+                                                    color="primary"
+                                                  >
+                                                    Description
+                                                    <span className="text-xs font-normal text-text-secondary ml-1">
+                                                      (optional, max 72 chars)
                                                     </span>
-                                                  </p>
-                                                  <p
-                                                    className="text-xs font-normal text-accents-secondary_text underline underline-offset-[3px] decoration-0"
+                                                  </Text>
+                                                  <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 text-red-500 hover:bg-red-50"
                                                     onClick={() => {
                                                       setFieldValue(
                                                         `interactiveListSections.${index}.rows.${idx}.descriptionEnable`,
-                                                        true
+                                                        false
+                                                      );
+                                                      setFieldValue(
+                                                        `interactiveListSections.${index}.rows.${idx}.description`,
+                                                        ""
                                                       );
                                                     }}
                                                   >
-                                                    Description
-                                                  </p>
+                                                    <DeleteIcon className="w-3 h-3" />
+                                                  </Button>
                                                 </div>
-                                                <div className="w-full h-10 flex items-center gap-2">
-                                                  <div className="flex-1">
-                                                    <Input
-                                                      name={`interactiveListSections.${index}.rows.${idx}.title`}
-                                                      placeholder={`section_${
-                                                        index + 1
-                                                      }_row_${idx + 1}`}
-                                                      onChange={handleChange}
-                                                      value={row.title}
-                                                    />
-                                                  </div>
-
-                                                  <div
-                                                    className="h-10 w-10 bg-red-200 rounded flex items-center justify-center cursor-pointer"
-                                                    onClick={() => {
-                                                      remove(idx);
-                                                    }}
-                                                  >
-                                                    <DeleteIcon className="text-base text-red-500" />
-                                                  </div>
-                                                </div>
+                                                <Input
+                                                  name={`interactiveListSections.${index}.rows.${idx}.description`}
+                                                  type="text"
+                                                  placeholder="Enter description"
+                                                  onChange={handleChange}
+                                                  value={row.description}
+                                                  className="border-gray-200"
+                                                />
                                                 <ErrorMessage
-                                                  name={`interactiveListSections.${index}.rows.${idx}.title`}
+                                                  name={`interactiveListSections.${index}.rows.${idx}.description`}
                                                   component="div"
-                                                  className="text-xs text-red-500 pt-1"
+                                                  className="text-xs text-red-500"
                                                 />
                                               </div>
-
-                                              {values.interactiveListSections[
-                                                index
-                                              ].rows[idx].descriptionEnable ? (
-                                                <div className="my-2">
-                                                  <div className="flex items-center justify-between pt-2 my-2">
-                                                    <p className="text-xs font-medium text-base-primary">
-                                                      {`description`}{" "}
-                                                      <span className="text-[10px] font-normal">
-                                                        {
-                                                          " (optional, max 72 chars)"
-                                                        }
-                                                      </span>
-                                                    </p>
-                                                  </div>
-                                                  <div className="w-full h-10 flex items-center gap-2">
-                                                    <div className="flex-1">
-                                                      <Input
-                                                        name={`interactiveListSections.${index}.rows.${idx}.description`}
-                                                        type="text"
-                                                        placeholder={`input value`}
-                                                        onChange={handleChange}
-                                                        value={row.description}
-                                                      />
-                                                    </div>
-                                                    <div
-                                                      className="h-10 w-10 bg-red-200 rounded flex items-center justify-center cursor-pointer"
-                                                      onClick={() => {
-                                                        setFieldValue(
-                                                          `interactiveListSections.${index}.rows.${idx}.descriptionEnable`,
-                                                          false
-                                                        );
-                                                      }}
-                                                    >
-                                                      <DeleteIcon className="text-base text-red-500" />
-                                                    </div>
-                                                  </div>
-                                                  <ErrorMessage
-                                                    name={`interactiveListSections.${index}.rows.${idx}.description`}
-                                                    component="div"
-                                                    className="text-xs text-red-500 pt-1 px-1"
-                                                  />
-                                                </div>
-                                              ) : null}
-                                            </div>
+                                            )}
                                           </div>
                                         ))}
-                                      <p
-                                        className="text-xs font-normal text-blue-500 cursor-pointer underline underline-offset-[3px] decoration-0"
-                                        onClick={() => {
-                                          push({
-                                            id: Math.random()
-                                              .toString(20)
-                                              .slice(2),
-                                            title: "",
-                                            description: "",
-                                            descriptionEnable: false,
-                                          });
-                                        }}
-                                      >
-                                        Add Row
-                                      </p>
                                     </div>
                                   )}
                                 </FieldArray>
                               </div>
-                              <div
-                                className="w-full h-10 border border-red-500 bg-red-50 rounded flex justify-center items-center text-sm font-normal text-red-500"
-                                onClick={() => {
-                                  remove(index);
-                                }}
-                              >
-                                Deleted Section
-                              </div>
-                            </div>
-                          )
+                            )
+                          )}
+
+                        {errors.interactiveListSections ===
+                          "You can create up to 10 rows." && (
+                          <div className="text-sm font-medium text-red-500">
+                            {errors?.interactiveListSections}
+                          </div>
                         )}
-
-                      {errors.interactiveListSections ===
-                        "You can create up to 10 rows." && (
-                        <div className="w-full text-sm font-medium text-red-500 pb-3">
-                          {errors?.interactiveListSections}
-                        </div>
-                      )}
-
-                      <div className=" w-full">
-                        <div
-                          className="w-full h-10 border border-green-500 bg-green-50 rounded flex justify-center items-center text-sm font-normal text-green-500"
-                          onClick={() => {
-                            if (values.interactiveListSections.length <= 9) {
-                              push({
-                                id: Math.random().toString(10).slice(2),
-                                title: "",
-                                rows: [],
-                              });
-                            }
-                          }}
-                        >
-                          Add New Section
-                        </div>
                       </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={values.interactiveListSections.length >= 10}
+                        onClick={() => {
+                          if (values.interactiveListSections.length <= 9) {
+                            push({
+                              id: Math.random().toString(10).slice(2),
+                              title: "",
+                              rows: [],
+                            });
+                          }
+                        }}
+                        leftIcon={<PlusIcon className="w-4 h-4" />}
+                      >
+                        Add Section
+                      </Button>
                     </div>
                   )}
                 </FieldArray>
 
-                <div></div>
-                <div className="space-y-2">
-                  <Text size="sm" weight="medium">
-                    Save Answers in a variable
+                {/* Enhanced Variable Section */}
+                <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <Text size="sm" weight="semibold" color="primary">
+                    Save Response Variable
                   </Text>
                   <Input
                     name="user_input_variable"
                     value={values?.user_input_variable}
-                    placeholder={"@value"}
+                    placeholder="@user_response"
                     onChange={handleChange}
+                    className="border-blue-200 bg-white"
                   />
+                  <Text size="xs" color="secondary">
+                    {`This variable will store the user's selected answer`}
+                  </Text>
+                </div>
+
+                {/* Enhanced Advanced Options */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                    <div>
+                      <Text size="sm" weight="semibold" color="primary">
+                        Advanced Options
+                      </Text>
+                      <Text size="xs" color="secondary" className="mt-1">
+                        Configure validation and error handling
+                      </Text>
+                    </div>
+                    <Switch
+                      checked={values?.isAdvanceEnable}
+                      onCheckedChange={(value) =>
+                        handleAdvanceToggle(value, setFieldValue)
+                      }
+                    />
+                  </div>
+
+                  {values?.isAdvanceEnable && (
+                    <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                      <Text size="base" weight="semibold" color="primary">
+                        Validation Settings
+                      </Text>
+
+                      <div className="grid grid-cols-1 gap-4">
+                        <Input
+                          label="Maximum Attempts"
+                          name="answer_validation.failsCount"
+                          value={values?.answer_validation?.failsCount}
+                          placeholder="3"
+                          onChange={handleChange}
+                          errorKey={errors?.answer_validation?.failsCount}
+                          className="border-orange-200 bg-white"
+                        />
+
+                        <div className="space-y-2">
+                          <Text size="sm" weight="medium" color="primary">
+                            Validation Error Message
+                          </Text>
+                          <Textarea
+                            name="answer_validation.validation_error_message"
+                            onChange={handleChange}
+                            value={
+                              values?.answer_validation
+                                ?.validation_error_message
+                            }
+                            errorKey={
+                              errors?.answer_validation
+                                ?.validation_error_message
+                            }
+                            placeholder="Please select a valid option from the list."
+                            className="border-orange-200 bg-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Text size="sm" weight="medium" color="primary">
+                            Fallback Message
+                          </Text>
+                          <Textarea
+                            name="answer_validation.fallback"
+                            onChange={handleChange}
+                            value={values?.answer_validation?.fallback}
+                            errorKey={errors?.answer_validation?.fallback}
+                            placeholder="I'll connect you with a human agent to assist you further."
+                            className="border-orange-200 bg-white "
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="w-full flex items-center gap-2 ">
+              {/* Enhanced Footer */}
+              <div className="flex items-center gap-3 p-6 border-t border-border-input bg-gray-50/50">
                 <SheetClose asChild>
-                  <Button type="submit" variant="outline" className="w-full">
+                  <Button type="button" variant="outline" className="flex-1">
                     Cancel
                   </Button>
                 </SheetClose>
-
                 <Button
                   type="submit"
-                  className="w-full"
-                  onClick={() => {
-                    handleSubmit();
-                  }}
+                  className="flex-1"
+                  onClick={() => handleSubmit()}
                 >
-                  Save
+                  Save Configuration
                 </Button>
               </div>
             </SheetContent>

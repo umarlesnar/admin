@@ -151,7 +151,7 @@ export const TransactionList = (props: Props) => {
         return (
           <div className="flex items-center gap-2 font-medium text-text-secondary">
             <Text className="text-center">
-              {moment(row.getValue("created_at")).format("DD-MM-YYYY")}
+            {moment.unix(row.getValue("created_at")).format("DD-MM-YYYY")}
             </Text>
           </div>
         );

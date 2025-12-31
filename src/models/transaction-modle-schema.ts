@@ -1,3 +1,4 @@
+import moment from "moment";
 import { Document, Model, ObjectId, Schema, model, models } from "mongoose";
 
 interface ITransaction extends Document {
@@ -10,7 +11,7 @@ interface ITransaction extends Document {
   reference_id: ObjectId;
   reference_type: string;
   user_id: ObjectId;
-  created_at: Date;
+  created_at: Schema.Types.Number;
 }
 type TransactionModel = Model<ITransaction>;
 const TransactionSchema = new Schema<ITransaction, TransactionModel>({
@@ -23,7 +24,7 @@ const TransactionSchema = new Schema<ITransaction, TransactionModel>({
   reference_id: { type: Schema.Types.ObjectId },
   reference_type: { type: Schema.Types.String },
   user_id: { type: Schema.Types.ObjectId },
-  created_at: { type: Schema.Types.Date, default: new Date() },
+  created_at: { type: Schema.Types.Number, default: () => moment().unix() },
 });
 export default models.transaction ||
   model<ITransaction>("transaction", TransactionSchema);

@@ -30,6 +30,12 @@ export const FB_ALLOWED_FILE_FORMAT = [
   "application/json",
 ];
 
+export const chatgptModels = [
+  { name: "GPT-3.5", value: "gpt-3.5-turbo-0125" },
+  { name: "GPT-4", value: "gpt-4" },
+  { name: "GPT-4 Turbo", value: "gpt-4-turbo" },
+];
+
 export const FB_AUDIO_EXT = [
   "audio/aac",
   "audio/mp4",

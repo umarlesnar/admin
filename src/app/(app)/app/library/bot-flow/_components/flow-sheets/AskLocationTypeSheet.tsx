@@ -17,11 +17,11 @@ import { Textarea } from "@/components/ui/textarea";
 import CustomTooltip from "@/components/ui/CustomTooltip";
 import { StrikeThrough } from "@/components/ui/icons/StrikeThroughIcon";
 import { BoldIcon } from "@/components/ui/icons/BoldIcon";
-import EmojiPickerNew from "../../../template/_components/EmojiPickerNew";
 import VariantButtonDropdown from "../VariantButtonDropdown";
 import { ItalicIcon } from "@/components/ui/icons/ItalicIcon";
 import { uiYupLocationSchema } from "@/validation-schema/ui/UiYupLocationSchema";
-import { Switch } from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
+import EmojiPickerNew from "../EmojiPickerNew";
 
 type Props = {
   children: ReactElement;
@@ -106,7 +106,7 @@ const AskLocationTypeSheet = ({ children, data, id }: Props) => {
                   <ErrorMessage
                     component={"p"}
                     name="flow_replies.data"
-                    className="test-sm font-normal text-red-500"
+                    className="text-xs font-normal text-red-500"
                   />
                   <div className="flex justify-between items-center ">
                     <VariantButtonDropdown
