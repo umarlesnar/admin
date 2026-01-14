@@ -42,6 +42,7 @@ import { usePartnerWorkspace } from "@/framework/partner/workspace/get-partner-w
 import RefreshButton from "@/components/ui/RefreshBotton";
 import { LeftArrowIcon } from "@/components/ui/icons/LeftArrowIcon";
 import { AngleRightIcon } from "@/components/ui/icons/AngleRightIcon";
+import nodeAccessConfig from "@/framework/subscription/node-access-config.json";
 
 const safeJSONParse = (jsonString: string | null, defaultValue: any) => {
   try {
@@ -54,63 +55,62 @@ const safeJSONParse = (jsonString: string | null, defaultValue: any) => {
 
 // ... [Existing CONSTANTS and TYPES remain the same] ...
 const BOT_FLOW_NODES_MASTER = [
-  { name: "Ask Address", id: "askAddress", hint: "free" },
-  { name: "Ask Location", id: "askLocation", hint: "free" },
-  { name: "Ask Media", id: "askMedia", hint: "free" },
-  { name: "Campaign Status", id: "update_broadcast_status", hint: "pro" },
-  { name: "Buttons", id: "choice_message", hint: "free" },
-  { name: "Products", id: "catalog_product", hint: "pro" },
-  { name: "Cart Clear", id: "clearCart", hint: "enterprise" },
-  { name: "Catalog Set", id: "catalog_set", hint: "pro" },
-  { name: "Catalog", id: "catalog", hint: "pro" },
-  { name: "Chat Status", id: "update_chat_status", hint: "free" },
-  { name: "Condition", id: "condition", hint: "pro" },
-  { name: "Geidea", id: "geidea", hint: "enterprise" },
-  { name: "Google Sheet", id: "googleSheet", hint: "enterprise" },
-  { name: "Lists", id: "choice_list", hint: "free" },
-  { name: "Send a Message", id: "main_message", hint: "free" },
-  { name: "Note", id: "note", hint: "free" },
-  { name: "Open AI", id: "openAI_message", hint: "enterprise" },
-  { name: "User Prompt", id: "ai-prompt", hint: "pro" },
-  { name: "Assign Operator", id: "assign_agent", hint: "free" },
-  { name: "Order Details", id: "order_details", hint: "pro" },
-  { name: "Order Status", id: "whatsapp_order_status", hint: "pro" },
-  { name: "Question", id: "question", hint: "free" },
-  { name: "Razorpay", id: "razorpay", hint: "enterprise" },
-  { name: "Sequence", id: "assign_sequence", hint: "pro" },
-  { name: "Switch", id: "switch_condition", hint: "pro" },
-  { name: "Set Tags", id: "set_tags", hint: "free" },
-  { name: "Template", id: "template", hint: "free" },
-  { name: "Transform", id: "dataTransform", hint: "pro" },
-  { name: "Delay", id: "delay", hint: "pro" },    
-  { name: "Webhook", id: "web_hook", hint: "enterprise" },
-  { name: "Update Attribute", id: "custom_attribute", hint: "pro" },
-  { name: "Trigger Chatbot", id: "trigger_chatbot", hint: "pro" },
-  { name: "Webview", id: "webview", hint: "pro" },
+  { name: "Ask Address", id: "askAddress" },
+  { name: "Ask Location", id: "askLocation" },
+  { name: "Ask Media", id: "askMedia" },
+  { name: "Campaign Status", id: "update_broadcast_status" },
+  { name: "Buttons", id: "choice_message" },
+  { name: "Products", id: "catalog_product" },
+  { name: "Cart Clear", id: "clearCart" },
+  { name: "Catalog Set", id: "catalog_set" },
+  { name: "Catalog", id: "catalog" },
+  { name: "Chat Status", id: "update_chat_status" },
+  { name: "Condition", id: "condition" },
+  { name: "Geidea", id: "geidea" },
+  { name: "Google Sheet", id: "googleSheet" },
+  { name: "Lists", id: "choice_list" },
+  { name: "Send a Message", id: "main_message" },
+  { name: "Note", id: "note" },
+  { name: "Open AI", id: "openAI_message" },
+  { name: "User Prompt", id: "ai-prompt" },
+  { name: "Assign Operator", id: "assign_agent" },
+  { name: "Order Details", id: "order_details" },
+  { name: "Order Status", id: "whatsapp_order_status" },
+  { name: "Question", id: "question" },
+  { name: "Razorpay", id: "razorpay" },
+  { name: "Sequence", id: "assign_sequence" },
+  { name: "Switch", id: "switch_condition" },
+  { name: "Set Tags", id: "set_tags" },
+  { name: "Template", id: "template" },
+  { name: "Transform", id: "dataTransform" },
+  { name: "Webhook", id: "web_hook" },
+  { name: "Update Attribute", id: "custom_attribute" },
+  { name: "Trigger Chatbot", id: "trigger_chatbot" },
+  { name: "Webview", id: "webview" },
 ];
 
 const WORK_FLOW_NODES_MASTER = [
-  { name: "Code", id: "javascript", hint: "enterprise" },
-  { name: "Condition", id: "condition", hint: "pro" },
-  { name: "Note", id: "note", hint: "free" },
-  { name: "Order Details", id: "order_details", hint: "pro" },
-  { name: "Order Status", id: "whatsapp_order_status", hint: "pro" },
-  { name: "Set Delay", id: "delay", hint: "pro" },
-  { name: "Shopify", id: "shopify", hint: "enterprise" },
-  { name: "Switch", id: "switch_condition", hint: "pro" },
-  { name: "Template", id: "template", hint: "free" },
-  { name: "Transform", id: "dataTransform", hint: "enterprise" },
-  { name: "Webhook", id: "web_hook", hint: "enterprise" },
-  { name: "Update Attribute", id: "custom_attribute", hint: "pro" },
-  { name: "Trigger Chatbot", id: "trigger_chatbot", hint: "pro" },
-  { name: "Customer", id: "customer", hint: "pro" },
+  { name: "Code", id: "javascript" },
+  { name: "Condition", id: "condition" },
+  { name: "Note", id: "note" },
+  { name: "Order Details", id: "order_details" },
+  { name: "Order Status", id: "whatsapp_order_status" },
+  { name: "Set Delay", id: "delay" },
+  { name: "Shopify", id: "shopify" },
+  { name: "Switch", id: "switch_condition" },
+  { name: "Template", id: "template" },
+  { name: "Transform", id: "dataTransform" },
+  { name: "Webhook", id: "web_hook" },
+  { name: "Update Attribute", id: "custom_attribute" },
+  { name: "Trigger Chatbot", id: "trigger_chatbot" },
+  { name: "Customer", id: "customer" }
 ];
 
 type NodePermissionItem = {
   name: string;
   id: string;
   enabled: boolean;
-  hint: string;
+  hint?: string;
 };
 
 type AvailableNodesState = {
@@ -402,6 +402,7 @@ function NodeConfigurationForm({
     }));
   
     const initializeNodes = (savedConfig: any) => {
+      const hints = (nodeAccessConfig as any).nodeHints;
       const merge = (master: any[], saved: any[]) => {
         return master.map((m) => {
           const found = saved?.find((s: any) => s.id === m.id);
@@ -409,7 +410,7 @@ function NodeConfigurationForm({
             name: m.name,
             id: m.id,
             enabled: found ? found.enabled : false,
-            hint: found?.hint || m.hint || "free", // Use saved hint or master default
+            hint: found?.hint || hints[m.id] || "free",
           };
         });
       };
@@ -527,7 +528,7 @@ function NodeConfigurationForm({
       return (
         <div onClick={(e) => e.stopPropagation()} className="w-28">
           <Select
-            value={node.hint}
+            value={node.hint || "free"}
             onValueChange={(val) => handleChangeHint(type, node.id, val)}
           >
             <SelectTrigger className="h-7 text-xs">
@@ -699,7 +700,7 @@ function NodeConfigurationForm({
                             >
                               {node.name}
                             </label>
-                          </div>{" "}
+                          </div>
                           {node.enabled && (
                             <HintSelector type="work_flow" node={node} />
                           )}

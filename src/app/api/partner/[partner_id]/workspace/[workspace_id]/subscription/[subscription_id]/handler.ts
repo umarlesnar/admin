@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { yupToFormErrorsServer } from "@/lib/utils/formik/yup-to-form-errors";
 import { apiMiddlerware } from "@/middleware/apiMiddleware";
 import subscriptionSchema from "@/models/subscription-schema";
+import moment from "moment";
 
 const router = createEdgeRouter<NextRequest, RequestContext>();
 
@@ -47,6 +48,14 @@ router
         );
       }
 
+      // Helper function to convert date to Unix timestamp
+      const convertToUnixTimestamp = (dateValue: any) => {
+        if (!dateValue) return null;
+        // If value is > 10 billion, it's already in milliseconds
+        const dateInMs = dateValue > 10000000000 ? dateValue : dateValue * 1000;
+        return Math.floor(moment(dateInMs).endOf("day").valueOf() / 1000);
+      };
+
       // Step 3: build update fields based on payment_gateway
       const updateFields: Record<string, any> = {};
 
@@ -68,14 +77,17 @@ router
           SubscriptionDateValidateBody.r_start_at !== undefined &&
           SubscriptionDateValidateBody.r_start_at !== null
         ) {
-          updateFields.r_current_start_at =
-            SubscriptionDateValidateBody.r_start_at;
+          updateFields.r_current_start_at = Math.floor(
+            SubscriptionDateValidateBody.r_start_at
+          );
         }
         if (
           SubscriptionDateValidateBody.r_end_at !== undefined &&
           SubscriptionDateValidateBody.r_end_at !== null
         ) {
-          updateFields.r_current_end_at = SubscriptionDateValidateBody.r_end_at;
+          updateFields.r_current_end_at = convertToUnixTimestamp(
+            SubscriptionDateValidateBody.r_end_at
+          );
         }
       } else if (existingSubscription.payment_gateway === "manual") {
         // For manual: update all fields including both current and regular dates
@@ -93,14 +105,17 @@ router
           SubscriptionDateValidateBody.r_start_at !== undefined &&
           SubscriptionDateValidateBody.r_start_at !== null
         ) {
-          updateFields.r_current_start_at =
-            SubscriptionDateValidateBody.r_start_at;
+          updateFields.r_current_start_at = Math.floor(
+            SubscriptionDateValidateBody.r_start_at
+          );
         }
         if (
           SubscriptionDateValidateBody.r_end_at !== undefined &&
           SubscriptionDateValidateBody.r_end_at !== null
         ) {
-          updateFields.r_current_end_at = SubscriptionDateValidateBody.r_end_at;
+          updateFields.r_current_end_at = convertToUnixTimestamp(
+            SubscriptionDateValidateBody.r_end_at
+          );
         }
       } else {
         for (const key in SubscriptionDateValidateBody) {

@@ -82,8 +82,8 @@ export default function UpgradeSubscriptionSheet({
       // Convert dates to unix timestamp for API
       const payload = {
         ...values,
-        start_at: moment(values.start_at).unix(),
-        end_at: moment(values.end_at).endOf("day").unix(),
+        r_start_at: moment(values.start_at).startOf("day").unix(),
+        r_end_at: moment(values.end_at).endOf("day").unix(),
       };
       
       const res = await http.post(

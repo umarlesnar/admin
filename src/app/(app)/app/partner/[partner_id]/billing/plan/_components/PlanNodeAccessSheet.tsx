@@ -22,71 +22,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import nodeAccessConfig from "@/framework/subscription/node-access-config.json";
 
 type Props = {
   children: ReactElement;
   data: any;
 };
 
-// --- CONSTANTS ---
-// Added hint field
 const BOT_FLOW_NODES_MASTER = [
-  { name: "Ask Address", id: "askAddress", hint: "free" },
-  { name: "Ask Location", id: "askLocation", hint: "free" },
-  { name: "Ask Media", id: "askMedia", hint: "free" },
-  { name: "Campaign Status", id: "update_broadcast_status", hint: "pro" },
-  { name: "Buttons", id: "choice_message", hint: "free" },
-  { name: "Products", id: "catalog_product", hint: "pro" },
-  { name: "Cart Clear", id: "clearCart", hint: "enterprise" },
-  { name: "Catalog Set", id: "catalog_set", hint: "pro" },
-  { name: "Catalog", id: "catalog", hint: "pro" },
-  { name: "Chat Status", id: "update_chat_status", hint: "free" },
-  { name: "Condition", id: "condition", hint: "pro" },
-  { name: "Geidea", id: "geidea", hint: "enterprise" },
-  { name: "Google Sheet", id: "googleSheet", hint: "enterprise" },
-  { name: "Lists", id: "choice_list", hint: "free" },
-  { name: "Send a Message", id: "main_message", hint: "free" },
-  { name: "Note", id: "note", hint: "free" },
-  { name: "Open AI", id: "openAI_message", hint: "enterprise" },
-  { name: "User Prompt", id: "ai-prompt", hint: "pro" },
-  { name: "Assign Operator", id: "assign_agent", hint: "free" },
-  { name: "Order Details", id: "order_details", hint: "pro" },
-  { name: "Order Status", id: "whatsapp_order_status", hint: "pro" },
-  { name: "Question", id: "question", hint: "free" },
-  { name: "Razorpay", id: "razorpay", hint: "enterprise" },
-  { name: "Sequence", id: "assign_sequence", hint: "pro" },
-  { name: "Switch", id: "switch_condition", hint: "pro" },
-  { name: "Set Tags", id: "set_tags", hint: "free" },
-  { name: "Template", id: "template", hint: "free" },
-  { name: "Transform", id: "dataTransform", hint: "pro" },
-  { name: "Webhook", id: "web_hook", hint: "enterprise" },
-  { name: "Update Attribute", id: "custom_attribute", hint: "pro" },
-  { name: "Trigger Chatbot", id: "trigger_chatbot", hint: "pro" },
-  { name: "Webview", id: "webview", hint: "pro" }
+  { name: "Ask Address", id: "askAddress" },
+  { name: "Ask Location", id: "askLocation" },
+  { name: "Ask Media", id: "askMedia" },
+  { name: "Campaign Status", id: "update_broadcast_status" },
+  { name: "Buttons", id: "choice_message" },
+  { name: "Products", id: "catalog_product" },
+  { name: "Cart Clear", id: "clearCart" },
+  { name: "Catalog Set", id: "catalog_set" },
+  { name: "Catalog", id: "catalog" },
+  { name: "Chat Status", id: "update_chat_status" },
+  { name: "Condition", id: "condition" },
+  { name: "Geidea", id: "geidea" },
+  { name: "Google Sheet", id: "googleSheet" },
+  { name: "Lists", id: "choice_list" },
+  { name: "Send a Message", id: "main_message" },
+  { name: "Note", id: "note" },
+  { name: "Open AI", id: "openAI_message" },
+  { name: "User Prompt", id: "ai-prompt" },
+  { name: "Assign Operator", id: "assign_agent" },
+  { name: "Order Details", id: "order_details" },
+  { name: "Order Status", id: "whatsapp_order_status" },
+  { name: "Question", id: "question" },
+  { name: "Razorpay", id: "razorpay" },
+  { name: "Sequence", id: "assign_sequence" },
+  { name: "Switch", id: "switch_condition" },
+  { name: "Set Tags", id: "set_tags" },
+  { name: "Template", id: "template" },
+  { name: "Transform", id: "dataTransform" },
+  { name: "Webhook", id: "web_hook" },
+  { name: "Update Attribute", id: "custom_attribute" },
+  { name: "Trigger Chatbot", id: "trigger_chatbot" },
+  { name: "Webview", id: "webview" }
 ];
 
 const WORK_FLOW_NODES_MASTER = [
-  { name: "Code", id: "javascript", hint: "enterprise" },
-  { name: "Condition", id: "condition", hint: "pro" },
-  { name: "Note", id: "note", hint: "free" },
-  { name: "Order Details", id: "order_details", hint: "pro" },
-  { name: "Order Status", id: "whatsapp_order_status", hint: "pro" },
-  { name: "Set Delay", id: "delay", hint: "pro" },
-  { name: "Shopify", id: "shopify", hint: "enterprise" },
-  { name: "Switch", id: "switch_condition", hint: "pro" },
-  { name: "Template", id: "template", hint: "free" },
-  { name: "Transform", id: "dataTransform", hint: "enterprise" },
-  { name: "Webhook", id: "web_hook", hint: "enterprise" },
-  { name: "Update Attribute", id: "custom_attribute", hint: "pro" },
-  { name: "Trigger Chatbot", id: "trigger_chatbot", hint: "pro" },
-  { name: "Customer", id: "customer", hint: "pro" }
+  { name: "Code", id: "javascript" },
+  { name: "Condition", id: "condition" },
+  { name: "Note", id: "note" },
+  { name: "Order Details", id: "order_details" },
+  { name: "Order Status", id: "whatsapp_order_status" },
+  { name: "Set Delay", id: "delay" },
+  { name: "Shopify", id: "shopify" },
+  { name: "Switch", id: "switch_condition" },
+  { name: "Template", id: "template" },
+  { name: "Transform", id: "dataTransform" },
+  { name: "Webhook", id: "web_hook" },
+  { name: "Update Attribute", id: "custom_attribute" },
+  { name: "Trigger Chatbot", id: "trigger_chatbot" },
+  { name: "Customer", id: "customer" }
 ];
 
 type NodeAccessItem = {
   name: string;
   id: string;
   enabled: boolean;
-  hint: string; // Added hint string
+  hint: string;
 };
 
 type NodeAccessState = {
@@ -97,36 +96,37 @@ type NodeAccessState = {
 const PlanNodeAccessSheet = ({ children, data }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const { mutateAsync, isPending } = usePartnerProductMutation();
+  const [selectedPlan, setSelectedPlan] = useState<"free" | "pro" | "enterprise">("free");
   
   const [nodesAccess, setNodesAccess] = useState<NodeAccessState>({
     bot_flow: [],
     work_flow: [],
   });
 
-  // Initialize state: Merge master list with saved data
   useEffect(() => {
     if (open) {
-      const savedAccess = data?.nodes_access || { bot_flow: [], work_flow: [] };
-
-      // Helper to merge master list with saved state
-      const mergeNodes = (masterList: any[], savedList: any[]) => {
-        return masterList.map((masterNode) => {
-          const savedNode = savedList?.find((n: any) => n.id === masterNode.id);
-          return {
-            name: masterNode.name,
-            id: masterNode.id,
-            enabled: savedNode ? savedNode.enabled : false, // Default to false if not found
-            hint: savedNode?.hint || masterNode.hint || "free", // Use saved hint or master default
-          };
-        });
-      };
+      const config = nodeAccessConfig as any;
+      const planConfig = config[selectedPlan];
+      const enabledBotIds = new Set(planConfig.bot_flow);
+      const enabledWorkIds = new Set(planConfig.work_flow);
+      const hints = config.nodeHints;
 
       setNodesAccess({
-        bot_flow: mergeNodes(BOT_FLOW_NODES_MASTER, savedAccess.bot_flow),
-        work_flow: mergeNodes(WORK_FLOW_NODES_MASTER, savedAccess.work_flow),
+        bot_flow: BOT_FLOW_NODES_MASTER.map((node) => ({
+          name: node.name,
+          id: node.id,
+          enabled: enabledBotIds.has(node.id),
+          hint: hints[node.id] || "free",
+        })),
+        work_flow: WORK_FLOW_NODES_MASTER.map((node) => ({
+          name: node.name,
+          id: node.id,
+          enabled: enabledWorkIds.has(node.id),
+          hint: hints[node.id] || "free",
+        })),
       });
     }
-  }, [data, open]);
+  }, [selectedPlan, open]);
 
   const handleToggleNode = (type: "bot_flow" | "work_flow", nodeId: string) => {
     setNodesAccess((prev) => {
@@ -140,20 +140,27 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
     });
   };
 
-  const handleChangeHint = (
-    type: "bot_flow" | "work_flow",
-    nodeId: string,
-    hint: string
-  ) => {
-    setNodesAccess((prev) => {
-      const list = prev[type].map((node) => {
-        if (node.id === nodeId) {
-          return { ...node, hint };
-        }
-        return node;
-      });
-      return { ...prev, [type]: list };
-    });
+  const HintSelector = ({
+    type,
+    node,
+  }: {
+    type: "bot_flow" | "work_flow";
+    node: NodeAccessItem;
+  }) => {
+    return (
+      <div onClick={(e) => e.stopPropagation()} className="w-28">
+        <Select value={node.hint} disabled>
+          <SelectTrigger className="h-7 text-xs">
+            <SelectValue placeholder="Hint" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="free">Free</SelectItem>
+            <SelectItem value="pro">Pro</SelectItem>
+            <SelectItem value="enterprise">Enterprise</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    );
   };
 
   const handleSave = async () => {
@@ -183,31 +190,7 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
     event.preventDefault();
   };
 
-  const HintSelector = ({
-    type,
-    node,
-  }: {
-    type: "bot_flow" | "work_flow";
-    node: NodeAccessItem;
-  }) => {
-    return (
-      <div onClick={(e) => e.stopPropagation()} className="w-28">
-        <Select
-          value={node.hint}
-          onValueChange={(val) => handleChangeHint(type, node.id, val)}
-        >
-          <SelectTrigger className="h-7 text-xs">
-            <SelectValue placeholder="Hint" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="free">Free</SelectItem>
-            <SelectItem value="pro">Pro</SelectItem>
-            <SelectItem value="enterprise">Enterprise</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    );
-  };
+
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -225,7 +208,7 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
                     Node Access: {data?.name}
                   </SheetTitle>
                   <SheetDescription>
-                    Configure enabled nodes for this plan.
+                    Select a plan to configure available nodes.
                   </SheetDescription>
                 </div>
                 <SheetClose asChild>
@@ -233,6 +216,19 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
                 </SheetClose>
               </div>
             </SheetHeader>
+
+            <div className="mb-6 flex gap-2">
+              {(["free", "pro", "enterprise"] as const).map((plan) => (
+                <Button
+                  key={plan}
+                  variant={selectedPlan === plan ? "default" : "outline"}
+                  onClick={() => setSelectedPlan(plan)}
+                  className="capitalize"
+                >
+                  {plan}
+                </Button>
+              ))}
+            </div>
 
             <div className="space-y-6 pb-8">
               {/* Bot Flow Nodes */}
