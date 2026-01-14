@@ -126,9 +126,14 @@ router
       }
 
       // Determine End Date
-      let end_at_unix = end_at;
-      if (typeof end_at_unix !== 'number' || end_at_unix <= start_at_unix) {
+      let end_at_unix: number;
+      if (end_at) {
+        // Set end date to 11:59 PM using moment
+        end_at_unix = moment(end_at).endOf('day').unix();
+      } else if (typeof end_at !== 'number' || end_at <= start_at_unix) {
          end_at_unix = moment.unix(start_at_unix).add(1, 'month').unix();
+      } else {
+        end_at_unix = end_at;
       }
 
       // --- 1. Handle Old Subscription ---

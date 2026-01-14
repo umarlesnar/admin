@@ -265,9 +265,17 @@ export const SubscriptionList = (props: Props) => {
       id: "action",
       header: "Actions",
       cell: ({ row }: any) => {
-        const isExpired = row?.original?.r_current_end_at
-          ? moment.unix(row.original.r_current_end_at).isBefore(moment())
-          : false;
+        const subscription = row.original;
+        
+        // Logic for Renewal Button Visibility
+        const isExpired = subscription.status === "expired";
+        const isCompleted = subscription.status === "completed";
+        const isActiveButExpired = 
+          subscription.status === "active" && 
+          subscription.r_current_end_at &&
+          moment.unix(subscription.r_current_end_at).isBefore(moment());
+
+        const showRenewButton = isExpired || isCompleted || isActiveButExpired;
 
         return (
           <div className="flex items-center gap-3">
@@ -279,7 +287,7 @@ export const SubscriptionList = (props: Props) => {
             </EditSubscriptionDateSheet>
 
             {/* UPGRADE BUTTON: Only for Active Subscriptions */}
-            {!isExpired && row.original.status === "active" && (
+            {!isActiveButExpired && row.original.status === "active" && (
               <UpgradeSubscriptionSheet subscription={row.original}>
                 <Button size="sm" variant="default">
                   Upgrade
@@ -287,14 +295,12 @@ export const SubscriptionList = (props: Props) => {
               </UpgradeSubscriptionSheet>
             )}
 
-            {/* RENEW BUTTON: Show if expired (unless cancelled or completed) */}
-            {row.original.status !== "cancelled" &&
-              row.original.status !== "completed" &&
-              isExpired && (
-                <RenewSubscriptionSheet subscription={row.original}>
-                  <Button size="sm">Renew</Button>
-                </RenewSubscriptionSheet>
-              )}
+            {/* RENEW BUTTON: Show based on updated logic */}
+            {showRenewButton && (
+              <RenewSubscriptionSheet subscription={row.original}>
+                <Button size="sm">Renew</Button>
+              </RenewSubscriptionSheet>
+            )}
 
             {/* Cancel Button */}
             {row.original.status == "active" && (

@@ -77,7 +77,7 @@ const BusinessAccountLists = () => {
                       <EyeIcon
                         className="w-5 h-5 text-blue-500 cursor-pointer"
                         onClick={() => {
-                          router.push(`/app/business/${item._id}/overview`);
+                          router.push(`/app/partner/${item.partner_id}/workspace/${item.workspace_id}/workspace-overview/whatsapp/business/${item._id}/overview`);
                         }}
                       />
                     </div>

@@ -5,7 +5,6 @@ import { Metadata } from "next";
 import WorkspacePageHeader from "../../../_components/WorkspacePageHeader";
 import WorkspaceSideNavBar from "../_components/WorkspaceSideNavBar";
 import WorkspaceSettingsCardsList from "./WorkspaceSettingCard";
-import WhatsappStatusCard from "./AccountStatusCard"; // Import new component
 
 export const metadata: Metadata = {
   title: "Workspace | Setting",
@@ -27,8 +26,6 @@ export default function WorkspaceSettingPage() {
                 <WorkspaceSideNavBar />
                 <div className="w-full flex-1 h-full bg-white overflow-auto rounded-md p-4 space-y-4">
                <WorkspaceSettingsCardsList />
-               {/* Added WhatsApp Status Card */}
-               <WhatsappStatusCard />
                 </div>
               </div>
             </div>

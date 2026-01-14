@@ -16,6 +16,7 @@ import _isEmpty from "lodash/isEmpty";
 import paymentInvoiceSchema from "@/models/payment-invoice-schema";
 import workspaceModulesModelSchema from "@/models/workspace-modules-model-schema";
 import masterModulesModuleSchema from "@/models/master-modules-module-schema";
+import moment from "moment";
 
 const router = createEdgeRouter<NextRequest, RequestContext>();
 router
@@ -213,6 +214,7 @@ router
         policy_id: planExist.policy_id,
         total_amount: planExist?.total_price || planExist.price,
         ...validatedBody,
+        r_current_end_at: validatedBody.r_end_at ? moment(validatedBody.r_end_at).endOf('day').toDate() : validatedBody.r_end_at,
       });
 
       await newSubscription.save();

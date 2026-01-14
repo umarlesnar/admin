@@ -42,12 +42,22 @@ router
       filterQuery = _omitBy(originalFilterObj, _isEmpty);
     }
 
-    let finalFilterQuery = { ...filterQuery };
-
-    let businessaccount = await businessAccountModelSchema
-      .find(finalFilterQuery)
-      .sort({ created_at: -1 })
-      .limit(5);
+    let businessaccount = await businessAccountModelSchema.aggregate([
+      { $match: filterQuery },
+      {
+        $lookup: {
+          from: "partners",
+          localField: "domain",
+          foreignField: "domain",
+          as: "partner_info"
+        }
+      },
+      { $unwind: { path: "$partner_info", preserveNullAndEmptyArrays: true } },
+      { $addFields: { partner_id: "$partner_info._id", partner_name: "$partner_info.name" } },
+      { $project: { partner_info: 0 } },
+      { $sort: { created_at: -1 } },
+      { $limit: 5 }
+    ]);
 
     return NextResponse.json({
       data: businessaccount,

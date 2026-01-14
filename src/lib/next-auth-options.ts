@@ -60,7 +60,7 @@ const formatUserResponse = (user: any) => {
 export const nextAuthOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 1800 // 30 minutes
+    maxAge: 1800, // 30 minutes
   },
   pages: {
     signIn: "/login",
@@ -101,6 +101,12 @@ export const nextAuthOptions: NextAuthOptions = {
             username: credentials.username,
             status: "ACTIVE",
           });
+
+          console.log(
+            "Found user:",
+            user.auth_credentials?.password || "",
+            credentials.password
+          );
 
           if (!user) {
             throw new Error("Invalid credentials");
@@ -148,19 +154,19 @@ export const nextAuthOptions: NextAuthOptions = {
             .lean();
 
           if (!existingUser) {
-            return false
+            return false;
           }
 
           const formattedUser = formatUserResponse(existingUser);
           if (!formattedUser) {
-            return false
+            return false;
           }
 
           Object.assign(user, formattedUser);
           return true;
         } catch (error) {
           console.error("Google sign in error:", error);
-          return false
+          return false;
         }
       }
       return true;
