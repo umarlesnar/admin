@@ -50,14 +50,21 @@ router
         });
 
         if (workspace) {
+          // Update workspace with new plan's nodes_available
+          const plan = await productItemModelSchema.findOne({ _id: element?.plan_id });
+          if (plan?.nodes_access) {
+            await workspaceModelSchema.updateOne(
+              { _id: element?.workspace_id },
+              { nodes_available: plan.nodes_access }
+            );
+          }
+
           const setting = await settingsModelSchema.findOne({
             domain: workspace?.domain,
             setting_key: "kwic",
           });
 
           if (setting?.setting_value?.workflow_url) {
-            const plan = await productItemModelSchema.findOne({ _id: element?.plan_id });
-
             const final_payload = {
               type: "subscription_started",
               workspace_name: workspace?.name || "",
@@ -137,6 +144,17 @@ router
             } catch (err) {
                 console.error("Webhook failed", err);
             }
+          }
+        }
+
+        // Check if there's a scheduled subscription to activate
+        if (element?.upcoming_plan?.plan_id) {
+          const newPlan = await productItemModelSchema.findOne({ _id: element.upcoming_plan.plan_id });
+          if (newPlan?.nodes_access) {
+            await workspaceModelSchema.updateOne(
+              { _id: element?.workspace_id },
+              { nodes_available: newPlan.nodes_access }
+            );
           }
         }
 

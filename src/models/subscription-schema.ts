@@ -35,6 +35,7 @@ interface ISubscription extends Document {
     start_at: number;
     end_at: number;
     payment_status: string;
+    nodes_available?: Schema.Types.Mixed;
   };
 }
 type SubscriptionModel = Model<ISubscription>;
@@ -73,6 +74,7 @@ const SubscriptionModelSchema = new Schema<ISubscription, SubscriptionModel>({
     start_at: { type: Schema.Types.Number },
     end_at: { type: Schema.Types.Number },
     payment_status: { type: Schema.Types.String },
+    nodes_available: { type: Schema.Types.Mixed },
   },
 });
 export default models.subscription ||

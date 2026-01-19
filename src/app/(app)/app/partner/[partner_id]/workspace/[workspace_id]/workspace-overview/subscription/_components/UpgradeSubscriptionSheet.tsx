@@ -95,6 +95,7 @@ export default function UpgradeSubscriptionSheet({
     onSuccess: (data) => {
       toast.success(data.message || "Plan upgraded successfully");
       queryClient.invalidateQueries({ queryKey: [API_ENDPOINTS.SUBSCRIPTION] });
+      queryClient.invalidateQueries({ queryKey: [`/partner/${partner_id}/workspace/${workspace_id}/subscription`] });
       setIsOpen(false);
     },
     onError: (error: any) => {

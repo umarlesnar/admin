@@ -198,14 +198,24 @@ router
         );
       }
 
-      // --- 4. Update Workspace (Only if immediate) ---
+      // --- 4. Update Workspace ---
       if (isUpgrade || isExpired) {
+        // Immediate update for upgrades
         await workspaceModelSchema.updateOne(
           { _id: workspace_id },
           {
             subscription_id: newSubscription._id,
             policy_id: newPlan.policy_id,
             type: newPlan.plan_type || newPlan.type,
+            nodes_available: newPlan.nodes_access,
+          }
+        );
+      } else {
+        // For scheduled downgrades, update the upcoming_plan with nodes_available
+        await subscriptionSchema.updateOne(
+          { _id: subscription_id },
+          {
+            "upcoming_plan.nodes_available": newPlan.nodes_access,
           }
         );
       }

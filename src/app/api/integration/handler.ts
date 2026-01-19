@@ -16,6 +16,10 @@ import {
 } from "@/validation-schema/api/yup-integration-library-schema";
 import integrationModelSchema from "@/models/integration-model-schema";
 import { apiMiddlerware } from "@/middleware/apiMiddleware";
+import {
+  generateClientId,
+  generateClientSecret,
+} from "@/lib/utils/app-client-id-gnerator";
 
 const router = createEdgeRouter<NextRequest, RequestContext>();
 router
@@ -199,11 +203,48 @@ router
 
       await newintegration.save();
 
+      if (IntegrationValidateBody.is_micro_app) {
+        // crwate app model entry
+
+        const appModelSchema = (await import("@/models/app-model-schema"))
+          .default;
+
+        const appData = {
+          slug: IntegrationValidateBody.configuration.app_id,
+          name: IntegrationValidateBody.configuration.app_name,
+          icon_url: newintegration.image_url,
+          description: newintegration.description,
+          is_micro_app: true,
+          is_production_ready: false,
+        };
+        const newApp = new appModelSchema(appData);
+        await newApp.save();
+
+        const client_id = generateClientId();
+        const client_secret = generateClientSecret();
+        const appClientData = {
+          app_id: newApp._id,
+          app_slug: newApp.slug,
+          client_id,
+          client_secret,
+          webhook_url: "",
+          redirect_url: "",
+          available_scopes: [],
+        };
+
+        const appClientModelSchema = (
+          await import("@/models/app-client-model-schema")
+        ).default;
+
+        const newAppClient = new appClientModelSchema(appClientData);
+        await newAppClient.save();
+      }
+
       return NextResponse.json(
         {
           status_code: SERVER_STATUS_CODE.SUCCESS_CODE,
           message: "Success",
-          data: newintegration,
+          data: {},
         },
         {
           status: SERVER_STATUS_CODE.SUCCESS_CODE,

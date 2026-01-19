@@ -31,4 +31,5 @@ export const yupProductSortQuery = Yup.object().shape({
 
 export const yupNodeAccessSchema = Yup.object().shape({
   nodes_access: Yup.mixed(),
+  current_plan: Yup.string(),
 });

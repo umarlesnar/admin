@@ -24,9 +24,18 @@ import {
 } from "@/components/ui/select";
 import nodeAccessConfig from "@/framework/subscription/node-access-config.json";
 
+type PlanType = "free" | "pro" | "enterprise";
+
+type ProductData = {
+  _id: string;
+  name: string;
+  current_plan?: PlanType;
+  nodes_access?: NodeAccessState;
+};
+
 type Props = {
   children: ReactElement;
-  data: any;
+  data: ProductData;
 };
 
 const BOT_FLOW_NODES_MASTER = [
@@ -93,11 +102,17 @@ type NodeAccessState = {
   work_flow: NodeAccessItem[];
 };
 
+type NodeAccessConfig = {
+  nodeHints: Record<string, PlanType>;
+  free: { bot_flow: string[]; work_flow: string[] };
+  pro: { bot_flow: string[]; work_flow: string[] };
+  enterprise: { bot_flow: string[]; work_flow: string[] };
+};
+
 const PlanNodeAccessSheet = ({ children, data }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const { mutateAsync, isPending } = usePartnerProductMutation();
-  const [selectedPlan, setSelectedPlan] = useState<"free" | "pro" | "enterprise">("free");
-  
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>(data?.current_plan || "free");
   const [nodesAccess, setNodesAccess] = useState<NodeAccessState>({
     bot_flow: [],
     work_flow: [],
@@ -105,7 +120,7 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
 
   useEffect(() => {
     if (open) {
-      const config = nodeAccessConfig as any;
+      const config = nodeAccessConfig as NodeAccessConfig;
       const planConfig = config[selectedPlan];
       const enabledBotIds = new Set(planConfig.bot_flow);
       const enabledWorkIds = new Set(planConfig.work_flow);
@@ -166,12 +181,15 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
   const handleSave = async () => {
     const loadingToast = toast.loading("Updating Node Access...");
     try {
+      const payload = {
+        nodes_access: nodesAccess,
+        current_plan: selectedPlan,
+      };
+
       await mutateAsync({
-        product_id: data?._id,
+        product_id: data._id,
         method: "PUT",
-        payload: {
-          nodes_access: nodesAccess,
-        },
+        payload,
       });
       
       toast.success(`Node Access Updated Successfully`, {
@@ -224,6 +242,7 @@ const PlanNodeAccessSheet = ({ children, data }: Props) => {
                   variant={selectedPlan === plan ? "default" : "outline"}
                   onClick={() => setSelectedPlan(plan)}
                   className="capitalize"
+                  title={plan === data?.current_plan ? "Current plan" : ""}
                 >
                   {plan}
                 </Button>
