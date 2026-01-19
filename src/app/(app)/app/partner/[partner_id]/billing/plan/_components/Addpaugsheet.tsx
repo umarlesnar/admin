@@ -28,7 +28,13 @@ type Props = {
   data?: any;
 };
 
-const CURRENCY_CODE = [{ value: "INR", name: "INR" }];
+const CURRENCY_CODE = [
+  { value: "INR", name: "INR" },
+  { value: "USD", name: "USD" },
+  { value: "EUR", name: "EUR" },
+  { value: "AUD", name: "AUD" },
+  { value: "CAD", name: "CAD" },
+];
 
 const PLAN_TYPE = [{ value: "paug", name: "paug" }];
 
@@ -147,7 +153,7 @@ const AddPaugSheet = ({ children, data }: Props) => {
                         dropdownClassname="p-2"
                         placeholder="Select Plan"
                         selectedOption={PLAN_TYPE.find(
-                          (o) => o.name === values.plan_type
+                          (o) => o.name === values.plan_type,
                         )}
                         onSelectData={(option: any) => {
                           setFieldValue("plan_type", option.value);

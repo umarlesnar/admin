@@ -76,21 +76,21 @@ router
     }
 
     let newUpdate = await businessAccountModelSchema.findOneAndUpdate(
-      {
-        _id: params.business_id,
-      },
-      filterPayload,
+        {
+          _id: params.business_id,
+        },
+        filterPayload,
       { new: true }
-    );
+        );
 
-    return NextResponse.json(
-      {
-        status: SERVER_STATUS_CODE.SUCCESS_CODE,
-        data: newUpdate,
-        message: "Broadcast Limit Updated Successfully",
-      },
-      { status: SERVER_STATUS_CODE.SUCCESS_CODE }
-    );
+      return NextResponse.json(
+        {
+          status: SERVER_STATUS_CODE.SUCCESS_CODE,
+          data: newUpdate,
+          message: "Broadcast Limit Updated Successfully",
+        },
+        { status: SERVER_STATUS_CODE.SUCCESS_CODE }
+      );
 
     // try {
     //   let per_day_limit = await businessAccountModelSchema.findOne({

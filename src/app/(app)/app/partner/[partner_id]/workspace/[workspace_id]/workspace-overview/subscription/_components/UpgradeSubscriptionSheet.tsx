@@ -23,6 +23,7 @@ import { useParams } from "next/navigation";
 import DatePicker from "@/components/ui/DatePicker";
 
 interface Subscription {
+  currency_code: any;
   _id: string;
   plan_id: string;
   plan_name: string;
@@ -69,13 +70,13 @@ export default function UpgradeSubscriptionSheet({
 
   const availablePlans = useMemo(() => {
     return (productData?.items || [])
-      .filter((plan: any) => plan._id !== subscription.plan_id)
+      .filter((plan: any) => plan._id !== subscription.plan_id && plan.currency_code === subscription.currency_code)
       .map((plan: any) => ({
         value: plan._id,
         name: `${plan.name} (${plan.type} - ${plan.price} ${plan.currency_code})`,
         original: plan,
       }));
-  }, [productData, subscription.plan_id]);
+  }, [productData, subscription.plan_id, subscription.currency_code]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: any) => {

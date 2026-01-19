@@ -12,8 +12,10 @@ import { toast } from "sonner";
 const BROADCAST_LIMT_VALUE = [
   { value: 250, name: "250" },
   { value: 1000, name: "1000" },
+  { value: 2000, name: "2000" },
   { value: 10000, name: "10000" },
   { value: 100000, name: "100000" },
+  { value: -1, name: "Unlimited" },
 ];
 
 const BroadcastLimitCard = () => {

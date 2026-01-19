@@ -30,7 +30,13 @@ type Props = {
   data?: any;
 };
 
-const CURRENCY_CODE = [{ value: "INR", name: "INR" }];
+const CURRENCY_CODE = [
+  { value: "INR", name: "INR" },
+  { value: "USD", name: "USD" },
+  { value: "EUR", name: "EUR" },
+  { value: "AUD", name: "AUD" },
+  { value: "CAD", name: "CAD" },
+];
 
 const TYPE = [
   { value: "annual", name: "annual" },
@@ -156,7 +162,7 @@ const AddPlanSheet = ({ children, data }: Props) => {
                         dropdownClassname={`p-2`}
                         placeholder={"Select Type"}
                         selectedOption={TYPE.find(
-                          (o) => o.name === values.type
+                          (o) => o.name === values.type,
                         )}
                         onSelectData={(name: any) => {
                           setFieldValue("type", name.name);
@@ -191,7 +197,7 @@ const AddPlanSheet = ({ children, data }: Props) => {
                         dropdownClassname="p-2"
                         placeholder="Select Plan"
                         selectedOption={PLAN_TYPE.find(
-                          (o) => o.name === values.plan_type
+                          (o) => o.name === values.plan_type,
                         )}
                         onSelectData={(option: any) => {
                           setFieldValue("plan_type", option.value);

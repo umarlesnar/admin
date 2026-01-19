@@ -31,7 +31,7 @@ export const yupBusinessCloudProviderSchema = Yup.object().shape({
 });
 
 export const yupBusinessBroadcastLimitSchema = Yup.object().shape({
-  per_day_limit: Yup.number().required(),
+  per_day_limit: Yup.number().nullable().typeError('Broadcast limit must be a number or null'),
 });
 
 export const yupBusinessAccountStatusSchema = Yup.object().shape({

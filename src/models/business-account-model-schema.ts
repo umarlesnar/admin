@@ -23,7 +23,7 @@ interface IBusinessAccount extends Document {
   access_token: String;
   default_bot: any;
   status: String;
-  per_day_limit: Number;
+  per_day_limit: number | null;
   subscription: Schema.Types.Mixed;
   wb_status: any;
   created_at: Date;
@@ -71,13 +71,13 @@ const BusinessAccountSchema = new Schema<
   sms: { type: Schema.Types.Mixed },
   access_token: { type: String },
   status: { type: String, default: "ACTIVE" },
-  per_day_limit: { type: Number, default: 250 },
+  per_day_limit: { type: Number, default: 250, sparse: true },
   default_bot: { type: Schema.Types.Mixed },
   wb_status: { type: Schema.Types.Mixed },
   created_at: { type: Schema.Types.Date, default: new Date() },
   subscription: { type: Schema.Types.Mixed },
   catalog_settings: { type: Schema.Types.Mixed },
-  cloud_provider: { type: Schema.Types.String ,default:"SELF_HOSTING"},
+  cloud_provider: { type: Schema.Types.String, default: "SELF_HOSTING" },
   commands: [
     {
       command_name: { type: Schema.Types.String },

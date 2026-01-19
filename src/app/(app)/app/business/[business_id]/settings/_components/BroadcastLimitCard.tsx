@@ -14,8 +14,10 @@ import { toast } from "sonner";
 const BROADCAST_LIMT_VALUE = [
   { value: 250, name: "250" },
   { value: 1000, name: "1000" },
+  {value: 2000, name: "2000" },
   { value: 10000, name: "10000" },
   { value: 100000, name: "100000" },
+  { value: -1, name: "Unlimited" },
 ];
 
 const BroadcastLimitCard = () => {
@@ -58,7 +60,7 @@ const BroadcastLimitCard = () => {
       }}
       enableReinitialize={true}
     >
-      {({ values, setFieldValue }) => {
+      {({ values, setFieldValue, isSubmitting }) => {
         return (
           <Form className="flex h-full flex-col justify-between overflow-y-auto bg-scroll">
             <div className="flex justify-between items-center ">
@@ -67,7 +69,8 @@ const BroadcastLimitCard = () => {
                   options={BROADCAST_LIMT_VALUE}
                   buttonClassname="w-[315px]"
                   selectedOption={BROADCAST_LIMT_VALUE.find((o) => {
-                    return o.value === values.per_day_limit;
+                    return o.value === values.per_day_limit || 
+                           (o.value === null && values.per_day_limit === null);
                   })}
                   onSelectData={(selected: any) => {
                     setFieldValue("per_day_limit", selected.value);

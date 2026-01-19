@@ -49,6 +49,14 @@ const VISIBILITY = [
   { value: "true", name: "true" },
   { value: "false", name: "false" },
 ];
+const CURRENCY_CODE = [
+  { value: "INR", name: "INR" },
+  { value: "USD", name: "USD" },
+  { value: "EUR", name: "EUR" },
+  { value: "AUD", name: "AUD" },
+  { value: "CAD", name: "CAD" },
+];
+
 
 type Props = {};
 
@@ -76,6 +84,7 @@ export const PlanList = (props: Props) => {
       filter: safeJSONParse(searchParams.get("filter"), {
         status: "",
         type: "",
+        currency_code: "",
       }),
       sort: safeJSONParse(searchParams.get("sort"), { created_at: "-1" }),
     };
@@ -419,6 +428,30 @@ export const PlanList = (props: Props) => {
                     filter: {
                       ...prev?.filter,
                       visibility: value.value,
+                    },
+                  };
+                });
+              }}
+              buttonClassname={`w-28`}
+            />
+          </div>
+          <div>
+            <Text size="sm" weight="medium" className="text-gray-600 mb-1">
+              Currency
+            </Text>
+            <Listbox
+              options={CURRENCY_CODE}
+              selectedOption={CURRENCY_CODE?.find((o) => {
+                return o.value == queryPage?.filter?.currency_code;
+              })}
+              onSelectData={(value: any) => {
+                setQueryPage((prev: any) => {
+                  return {
+                    ...prev,
+                    page: 1,
+                    filter: {
+                      ...prev?.filter,
+                      currency_code: value.value,
                     },
                   };
                 });

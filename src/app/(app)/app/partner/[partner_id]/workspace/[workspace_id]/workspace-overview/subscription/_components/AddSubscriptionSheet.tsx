@@ -36,22 +36,18 @@ const payment_gateway = [
   },
 ];
 
+const CURRENCY_CODES = [
+  { value: "INR", name: "INR" },
+  { value: "USD", name: "USD" },
+  { value: "EUR", name: "EUR" },
+  { value: "AUD", name: "AUD" },
+  { value: "CAD", name: "CAD" },
+];
+
 const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
   const [plans, setPlans] = useState([]);
   const { data, isLoading } = useProductsQuery({ per_page: 100 });
   const { mutateAsync, isPending } = useWorkspaceSubscriptionMutation();
-
-  useEffect(() => {
-    if (data?.items?.length > 0) {
-      const _plan = data?.items.map((item: any) => {
-        return {
-          ...item,
-          name: item.name + `${item.type ? ` ( ${item.type} )` : ""} `,
-        };
-      });
-      setPlans(_plan);
-    }
-  }, [data?.items]);
 
   return (
     <Formik
@@ -60,6 +56,7 @@ const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
         plan_id: "",
         auto_renew: false,
         status: "active",
+        currency_code: "",
       }}
       onSubmit={async (value, { setErrors }) => {
         const loadingToast = toast.loading("Loading...");
@@ -90,6 +87,18 @@ const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
       }}
     >
       {({ values, errors, setFieldValue, handleChange, handleSubmit }: any) => {
+        useEffect(() => {
+          if (data?.items?.length > 0) {
+            const filteredPlans = data.items.filter(
+              (item: any) => !values.currency_code || item.currency_code === values.currency_code
+            );
+            const _plan = filteredPlans.map((item: any) => ({
+              ...item,
+              name: item.name + `${item.type ? ` ( ${item.type} )` : ""}`,
+            }));
+            setPlans(_plan);
+          }
+        }, [data?.items, values.currency_code]);
         return (
           <div className="w-full h-full flex flex-col">
             <div className="space-y-2 flex-1">
@@ -138,6 +147,23 @@ const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
                     setFieldValue("plan_id", user._id)
                   }
                   disabled={isLoading}
+                />
+              </div>
+              <div className="w-full space-y-1">
+                <Text size="sm" tag="label" weight="medium">
+                  Currency Code
+                </Text>
+                <Combobox
+                  options={CURRENCY_CODES}
+                  buttonClassname="w-full"
+                  dropdownClassname="p-2"
+                  placeholder="Select currency code"
+                  selectedOption={
+                    CURRENCY_CODES.find((o: any) => o.value === values.currency_code) || null
+                  }
+                  onSelectData={(option: any) =>
+                    setFieldValue("currency_code", option.value)
+                  }
                 />
               </div>
               <div className="w-full flex items-start gap-3">

@@ -26,7 +26,13 @@ type Props = {
   data?: any;
 };
 
-const CURRENCY_CODE = [{ value: "INR", name: "INR" }];
+const CURRENCY_CODE = [
+  { value: "INR", name: "INR" },
+  { value: "USD", name: "USD" },
+  { value: "EUR", name: "EUR" },
+  { value: "AUD", name: "AUD" },
+  { value: "CAD", name: "CAD" },
+];
 
 const TYPE = [
   { value: "annual", name: "annual" },

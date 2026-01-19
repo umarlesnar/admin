@@ -33,6 +33,15 @@ const STATUS = [
   { value: "scheduled", name: "Scheduled" },
 ];
 
+const CURRENCY_CODES = [
+  { value: "", name: "All" },
+  { value: "INR", name: "INR" },
+  { value: "USD", name: "USD" },
+  { value: "EUR", name: "EUR" },
+  { value: "AUD", name: "AUD" },
+  { value: "CAD", name: "CAD" },
+];
+
 type Props = {};
 
 export const SubscriptionList = (props: Props) => {
@@ -59,6 +68,7 @@ export const SubscriptionList = (props: Props) => {
       q: searchParams.get("q") || "",
       filter: safeJSONParse(searchParams.get("filter"), {
         status: "",
+        currency_code: "",
       }),
       sort: safeJSONParse(searchParams.get("sort"), { _id: -1 }),
     };
@@ -379,6 +389,30 @@ export const SubscriptionList = (props: Props) => {
                       filter: {
                         ...prev?.filter,
                         status: value.value,
+                      },
+                    };
+                  });
+                }}
+                buttonClassname={`w-32`}
+              />
+            </div>
+            <div>
+              <Text size="sm" weight="medium" className="text-gray-600 mb-1">
+                Currency
+              </Text>
+              <Listbox
+                options={CURRENCY_CODES}
+                selectedOption={CURRENCY_CODES?.find((o) => {
+                  return o.value == queryPage?.filter?.currency_code;
+                })}
+                onSelectData={(value: any) => {
+                  setQueryPage((prev: any) => {
+                    return {
+                      ...prev,
+                      page: 1,
+                      filter: {
+                        ...prev?.filter,
+                        currency_code: value.value,
                       },
                     };
                   });
