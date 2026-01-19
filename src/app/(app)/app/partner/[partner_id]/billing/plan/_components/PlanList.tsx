@@ -24,6 +24,7 @@ import EditPaugSheet from "./EditPaugSheet";
 import { Badge } from "@/components/ui/badge";
 import { AccessIcon } from "@/components/ui/icons/AccessIcon";
 import PlanNodeAccessSheet from "./PlanNodeAccessSheet";
+import { CURRENCY_CODES } from "@/constants/currency";
 
 const STATUS = [
   { value: "", name: "All" },
@@ -48,13 +49,6 @@ const VISIBILITY = [
   { value: "", name: "All" },
   { value: "true", name: "true" },
   { value: "false", name: "false" },
-];
-const CURRENCY_CODE = [
-  { value: "INR", name: "INR" },
-  { value: "USD", name: "USD" },
-  { value: "EUR", name: "EUR" },
-  { value: "AUD", name: "AUD" },
-  { value: "CAD", name: "CAD" },
 ];
 
 
@@ -440,8 +434,8 @@ export const PlanList = (props: Props) => {
               Currency
             </Text>
             <Listbox
-              options={CURRENCY_CODE}
-              selectedOption={CURRENCY_CODE?.find((o) => {
+              options={[{ value: "", name: "All" }, ...CURRENCY_CODES]}
+              selectedOption={[{ value: "", name: "All" }, ...CURRENCY_CODES]?.find((o) => {
                 return o.value == queryPage?.filter?.currency_code;
               })}
               onSelectData={(value: any) => {
@@ -467,7 +461,7 @@ export const PlanList = (props: Props) => {
             />
           </div>
         </div>
-        <div className="flex items-center gap-2 pl-3">
+        <div className="flex items-center gap-2 pl-3 mb-20">
           <AddPaugSheet>
             <Button
               size="sm"

@@ -20,6 +20,7 @@ import { ErrorMessage, Formik } from "formik";
 import moment from "moment";
 import React, { ReactElement, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { CURRENCY_CODES } from "@/constants/currency";
 type Props = {
   children: ReactElement;
   workspace_id?: any;
@@ -36,18 +37,20 @@ const payment_gateway = [
   },
 ];
 
-const CURRENCY_CODES = [
-  { value: "INR", name: "INR" },
-  { value: "USD", name: "USD" },
-  { value: "EUR", name: "EUR" },
-  { value: "AUD", name: "AUD" },
-  { value: "CAD", name: "CAD" },
-];
-
 const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
   const [plans, setPlans] = useState([]);
   const { data, isLoading } = useProductsQuery({ per_page: 100 });
   const { mutateAsync, isPending } = useWorkspaceSubscriptionMutation();
+
+  useEffect(() => {
+    if (data?.items?.length > 0) {
+      const _plan = data.items.map((item: any) => ({
+        ...item,
+        name: item.name + `${item.type ? ` ( ${item.type} )` : ""}`,
+      }));
+      setPlans(_plan);
+    }
+  }, [data?.items]);
 
   return (
     <Formik
@@ -87,18 +90,9 @@ const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
       }}
     >
       {({ values, errors, setFieldValue, handleChange, handleSubmit }: any) => {
-        useEffect(() => {
-          if (data?.items?.length > 0) {
-            const filteredPlans = data.items.filter(
-              (item: any) => !values.currency_code || item.currency_code === values.currency_code
-            );
-            const _plan = filteredPlans.map((item: any) => ({
-              ...item,
-              name: item.name + `${item.type ? ` ( ${item.type} )` : ""}`,
-            }));
-            setPlans(_plan);
-          }
-        }, [data?.items, values.currency_code]);
+        const filteredPlans = plans.filter(
+          (item: any) => !values.currency_code || item.currency_code === values.currency_code
+        );
         return (
           <div className="w-full h-full flex flex-col">
             <div className="space-y-2 flex-1">
@@ -136,12 +130,12 @@ const AddSubscriptionForm = ({ onSheetClose, workspace_id }: any) => {
                   Plan
                 </Text>
                 <Combobox
-                  options={plans}
+                  options={filteredPlans}
                   buttonClassname="w-full"
                   dropdownClassname="p-2"
                   placeholder={isLoading ? "Loading plans..." : "Select plan"}
                   selectedOption={
-                    plans.find((o: any) => o._id === values.plan_id) || null
+                    filteredPlans.find((o: any) => o._id === values.plan_id) || null
                   }
                   onSelectData={(user: any) =>
                     setFieldValue("plan_id", user._id)

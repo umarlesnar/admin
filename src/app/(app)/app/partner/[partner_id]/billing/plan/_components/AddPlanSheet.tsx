@@ -24,19 +24,12 @@ import { Switch } from "@/components/ui/switch";
 import { ModulesIcon } from "@/components/ui/icons/ModulesIcon";
 import PlanIncludedModulesSheet from "./PlanIncludedModulesSheet";
 import { ModuleConfig } from "./PlanModuleConfigSheet";
+import { CURRENCY_CODES } from "@/constants/currency";
 
 type Props = {
   children: ReactElement;
   data?: any;
 };
-
-const CURRENCY_CODE = [
-  { value: "INR", name: "INR" },
-  { value: "USD", name: "USD" },
-  { value: "EUR", name: "EUR" },
-  { value: "AUD", name: "AUD" },
-  { value: "CAD", name: "CAD" },
-];
 
 const TYPE = [
   { value: "annual", name: "annual" },
@@ -307,11 +300,11 @@ const AddPlanSheet = ({ children, data }: Props) => {
                         Currency Code
                       </Text>
                       <Combobox
-                        options={CURRENCY_CODE}
+                        options={CURRENCY_CODES}
                         buttonClassname="w-full"
                         dropdownClassname={`p-2`}
                         placeholder={"Select currency code"}
-                        selectedOption={CURRENCY_CODE.find((o) => {
+                        selectedOption={CURRENCY_CODES.find((o) => {
                           return o.name === values.currency_code;
                         })}
                         onSelectData={(name: any) => {

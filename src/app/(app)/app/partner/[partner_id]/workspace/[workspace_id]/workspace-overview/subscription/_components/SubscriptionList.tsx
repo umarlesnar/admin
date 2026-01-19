@@ -24,6 +24,7 @@ import { EditIcon } from "@/components/ui/icons/EditIcone";
 import EditSubscriptionDateSheet from "./EditDateForm";
 import RenewSubscriptionSheet from "./RenewSubscriptionSheet";
 import UpgradeSubscriptionSheet from "./UpgradeSubscriptionSheet";
+import { CURRENCY_CODES } from "@/constants/currency";
 
 const STATUS = [
   { value: "", name: "All" },
@@ -31,15 +32,6 @@ const STATUS = [
   { value: "completed", name: "Completed" },
   { value: "cancelled", name: "Cancelled" },
   { value: "scheduled", name: "Scheduled" },
-];
-
-const CURRENCY_CODES = [
-  { value: "", name: "All" },
-  { value: "INR", name: "INR" },
-  { value: "USD", name: "USD" },
-  { value: "EUR", name: "EUR" },
-  { value: "AUD", name: "AUD" },
-  { value: "CAD", name: "CAD" },
 ];
 
 type Props = {};
@@ -401,8 +393,8 @@ export const SubscriptionList = (props: Props) => {
                 Currency
               </Text>
               <Listbox
-                options={CURRENCY_CODES}
-                selectedOption={CURRENCY_CODES?.find((o) => {
+                options={[{ value: "", name: "All" }, ...CURRENCY_CODES]}
+                selectedOption={[{ value: "", name: "All" }, ...CURRENCY_CODES]?.find((o) => {
                   return o.value == queryPage?.filter?.currency_code;
                 })}
                 onSelectData={(value: any) => {
